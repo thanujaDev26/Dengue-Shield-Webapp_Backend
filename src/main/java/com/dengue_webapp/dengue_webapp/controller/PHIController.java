@@ -2,8 +2,12 @@ package com.dengue_webapp.dengue_webapp.controller;
 
 
 import com.dengue_webapp.dengue_webapp.dto.request.RequestPHIDto;
+import com.dengue_webapp.dengue_webapp.dto.response.ResponsePHIDto;
+import com.dengue_webapp.dengue_webapp.model.entity.PHIOfficer;
 import com.dengue_webapp.dengue_webapp.service.PHIService;
 import com.dengue_webapp.dengue_webapp.util.StandardResponse;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,27 +16,29 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/phi")
 public class PHIController {
 
-    private final PHIService phiService;
+    @Autowired
+    private  PHIService phiService;
 
-    public PHIController(PHIService phiService) {
-        this.phiService = phiService;
+    @Autowired
+    private ModelMapper modelMapper;
+    @PostMapping("/register-phi")
+    public ResponseEntity<StandardResponse> createPHIOfficerInfo(@RequestBody RequestPHIDto dto) {
+        PHIOfficer createdPHI = phiService.createPHI(dto);
+
+        if (createdPHI == null) {
+            return new ResponseEntity<>(
+                    new StandardResponse(400, "Failed to create PHI Officer. Email might already exist or MOH Officer not found.", null),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
+
+        ResponsePHIDto response = modelMapper.map(createdPHI, ResponsePHIDto.class);
+
+        return new ResponseEntity<>(
+                new StandardResponse(201, "Successfully created a PHI Officer", response),
+                HttpStatus.CREATED
+        );
     }
-
-
-    @PostMapping
-    public ResponseEntity<StandardResponse> createPHIOfficerInfo(@RequestBody RequestPHIDto dto){
-       phiService.createPHI(dto);
-
-       return new ResponseEntity<>(
-               new StandardResponse(201, "Successfully created a PHI Officer", dto),
-               HttpStatus.CREATED
-       );
-    }
-
-//    @PostMapping
-//    public String createPHIOfficerInfo(){
-//        return "Create PHI Officer Info";
-//    }
 
     @GetMapping
     public String getPHIOfficerInfo(){

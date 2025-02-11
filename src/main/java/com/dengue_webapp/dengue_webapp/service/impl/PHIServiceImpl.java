@@ -2,9 +2,12 @@ package com.dengue_webapp.dengue_webapp.service.impl;
 
 import com.dengue_webapp.dengue_webapp.dto.request.RequestPHIDto;
 import com.dengue_webapp.dengue_webapp.dto.response.ResponsePHIDto;
-import com.dengue_webapp.dengue_webapp.model.PHIOfficer;
+import com.dengue_webapp.dengue_webapp.model.entity.MOHOfficer;
+import com.dengue_webapp.dengue_webapp.model.entity.PHIOfficer;
+import com.dengue_webapp.dengue_webapp.repository.MOHRepo;
 import com.dengue_webapp.dengue_webapp.repository.PHIRepo;
 import com.dengue_webapp.dengue_webapp.service.PHIService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -16,59 +19,72 @@ import java.util.Optional;
 @Service
 public class PHIServiceImpl implements PHIService {
 
-    private final PHIRepo phiRepo;
+    @Autowired
+    private ModelMapper modelMapper;
+    @Autowired
+    private  PHIRepo phiRepo;
 
     @Autowired
-    public PHIServiceImpl(PHIRepo phiRepo) {
-        this.phiRepo = phiRepo;
+    private MOHRepo mohRepo;
+    @Override
+    public PHIOfficer createPHI(RequestPHIDto dto){
+        try {
+            String email = dto.getEmail();
+
+            // Check if email already exists
+            if (!phiRepo.existsByEmail(email)) {
+                PHIOfficer newPhiOfficer = modelMapper.map(dto, PHIOfficer.class);
+                assignMOHOfficer(newPhiOfficer,dto.getDistrict(), dto.getBranch());
+                return phiRepo.save(newPhiOfficer); // Save and return the new officer
+            } else {
+                System.out.println("PHI Officer with this email already exists!");
+                return null; // Return null if officer already exists
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null; // Ensure method always returns a value
+        }
     }
 
-    @Override
-    public void createPHI(RequestPHIDto dto){
-        PHIOfficer phiOfficer = new PHIOfficer(
-                dto.getId(), dto.getName(), dto.getPhone(), dto.getEmail(), dto.getArea(), dto.getAddress()
-        );
+    public void assignMOHOfficer(  PHIOfficer newPhiOfficer,String branch,String district){
+        MOHOfficer mohOfficer = mohRepo.findByDistrictAndBranch(district,branch);
+        if(mohOfficer != null){
+            newPhiOfficer.setMohOfficer(mohOfficer);
+        }
 
-        phiRepo.save(phiOfficer);
     }
 
+
     @Override
-    public ResponsePHIDto getPHI(String id) {
+    public ResponsePHIDto getPHI(long id) {
         Optional<PHIOfficer> phiOfficer = phiRepo.findById(id);
         if(phiOfficer.isEmpty()){
             throw new RuntimeException("PHI Not Found");
         }
         PHIOfficer phi = phiOfficer.get();
-        return new ResponsePHIDto(
-                phi.getId(), phi.getName(), phi.getPhone(), phi.getEmail(), phi.getArea(), phi.getAddress()
-        );
+        return  modelMapper.map(phi,ResponsePHIDto.class);
+
     }
 
     @Override
-    public void deletePHI(String id) {
+    public void deletePHI(long id) {
         Optional<PHIOfficer> phiOfficer = phiRepo.findById(id);
         if(phiOfficer.isEmpty()){
             throw new RuntimeException("PHI Not Found");
         }
         PHIOfficer phi = phiOfficer.get();
-        phiRepo.deleteById(phi.getId());
+
     }
 
     @Override
-    public void updatePHI(String id, RequestPHIDto dto)  {
+    public void updatePHI(long id, RequestPHIDto dto)  {
         Optional<PHIOfficer> phiOfficer = phiRepo.findById(id);
 
         if(phiOfficer.isEmpty()){
             throw new RuntimeException("PHI Not Found");
         }
         PHIOfficer phi = phiOfficer.get();
-
-        phi.setName(dto.getName());
-        phi.setPhone(dto.getPhone());
-        phi.setEmail(dto.getEmail());
-        phi.setArea(dto.getArea());
-        phi.setAddress(dto.getAddress());
-
+         phi = modelMapper.map(dto,PHIOfficer.class);
         phiRepo.save(phi);
     }
 
@@ -83,9 +99,9 @@ public class PHIServiceImpl implements PHIService {
         List<PHIOfficer> phis = phiRepo.searchPHIOfficer(searchText, PageRequest.of(page, size));
         List<ResponsePHIDto> dtos = new ArrayList<>();
         phis.forEach(phi ->{
-            dtos.add(new ResponsePHIDto(
-                    phi.getId(), phi.getName(), phi.getPhone(), phi.getEmail(), phi.getArea(), phi.getAddress()
-            ));
+
+            dtos.add(modelMapper.map(phi, ResponsePHIDto.class));
+
         });
 
         return dtos;
