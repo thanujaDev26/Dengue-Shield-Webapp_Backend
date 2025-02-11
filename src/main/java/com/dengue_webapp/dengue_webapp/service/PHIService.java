@@ -2,18 +2,19 @@ package com.dengue_webapp.dengue_webapp.service;
 
 import com.dengue_webapp.dengue_webapp.dto.request.RequestPHIDto;
 import com.dengue_webapp.dengue_webapp.dto.response.ResponsePHIDto;
+import com.dengue_webapp.dengue_webapp.model.entity.PHIOfficer;
 
 import java.util.List;
 
 public interface PHIService {
 
-    public void createPHI(RequestPHIDto dto);
+    public PHIOfficer createPHI(RequestPHIDto dto);
+   public void  assignMOHOfficer(PHIOfficer newPhiOfficer, String branch, String district);
+    public ResponsePHIDto getPHI(long id);
 
-    public ResponsePHIDto getPHI(String id);
+    public void deletePHI(long id);
 
-    public void deletePHI(String id);
-
-    public void updatePHI(String id, RequestPHIDto dto);
+    public void updatePHI(long id, RequestPHIDto dto);
 
     public List<ResponsePHIDto> getAllPHI(String searchText, int page, int size);
 

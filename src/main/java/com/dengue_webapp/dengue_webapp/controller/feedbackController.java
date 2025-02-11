@@ -1,6 +1,6 @@
 package com.dengue_webapp.dengue_webapp.controller;
 
-import com.dengue_webapp.dengue_webapp.model.Feedback;
+import com.dengue_webapp.dengue_webapp.model.entity.Feedback;
 import com.dengue_webapp.dengue_webapp.service.FeedBackServiceIMPL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
