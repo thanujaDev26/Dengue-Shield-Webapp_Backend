@@ -32,7 +32,7 @@ public class PHIServiceImpl implements PHIService {
             String email = dto.getEmail();
 
             // Check if email already exists
-            if (!phiRepo.existsByEmail(email)) {
+            if (!phiRepo.existsByAppuser_Email(email)) {
                 PHIOfficer newPhiOfficer = modelMapper.map(dto, PHIOfficer.class);
                 assignMOHOfficer(newPhiOfficer,dto.getDistrict(), dto.getBranch());
                 return phiRepo.save(newPhiOfficer); // Save and return the new officer
