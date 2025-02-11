@@ -29,7 +29,7 @@ public class MOHServiceImpl implements MOHService {
             String email = mohOfficerDetails.getEmail();
 
             // Check if email already exists
-            if (!mohRepo.existsByEmail(email)) {
+            if (!mohRepo.existsByAppuser_Email(email)) {
                 MOHOfficer newMohOfficer = modelMapper.map(mohOfficerDetails, MOHOfficer.class);
                 assignPHIOfficers(newMohOfficer,mohOfficerDetails.getDistrict(), mohOfficerDetails.getBranch());
                 return mohRepo.save(newMohOfficer); // Save and return the new officer

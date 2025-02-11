@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 @EnableJpaRepositories
 public interface MOHRepo  extends JpaRepository<MOHOfficer,Long> {
 
-    boolean existsByEmail(String email);
-
     MOHOfficer findByDistrictAndBranch(String district, String branch);
+
+    boolean existsByAppuser_Email(String email);
 }

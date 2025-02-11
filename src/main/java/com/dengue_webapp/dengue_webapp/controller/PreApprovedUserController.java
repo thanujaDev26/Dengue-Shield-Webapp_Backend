@@ -15,7 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/admin")
 //user registration for pre approved users and admins
-public class AdminController {
+public class PreApprovedUserController {
     @Autowired
     private PreApprovedUserService preApprovedUserService;
 
