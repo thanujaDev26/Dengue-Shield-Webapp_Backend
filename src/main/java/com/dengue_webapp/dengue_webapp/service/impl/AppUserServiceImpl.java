@@ -1,14 +1,13 @@
 package com.dengue_webapp.dengue_webapp.service.impl;
 
-import com.dengue_webapp.dengue_webapp.dto.request.RequestAdminDto;
+import com.dengue_webapp.dengue_webapp.dto.request.RequestAppUserDto;
 import com.dengue_webapp.dengue_webapp.exceptions.InvalidArgumentExeception;
 import com.dengue_webapp.dengue_webapp.exceptions.NoDataFoundException;
 import com.dengue_webapp.dengue_webapp.exceptions.UserAlreadyExistsException;
 import com.dengue_webapp.dengue_webapp.model.entity.AppUser;
-import com.dengue_webapp.dengue_webapp.model.entity.PreApprovedUser;
 import com.dengue_webapp.dengue_webapp.model.enums.Role;
 import com.dengue_webapp.dengue_webapp.repository.AppUserRepo;
-import com.dengue_webapp.dengue_webapp.service.AdminService;
+import com.dengue_webapp.dengue_webapp.service.AppUserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,57 +18,56 @@ import java.util.Optional;
 import static com.dengue_webapp.dengue_webapp.model.enums.Role.ROLE_ADMIN;
 
 @Service
-public class AdminServiceImpl implements AdminService {
+public class AppUserServiceImpl implements AppUserService {
     @Autowired
     private AppUserRepo appUserRepo;
 
     @Autowired
     private ModelMapper modelMapper;
     @Override
-    public AppUser registerAdmin(RequestAdminDto user) {
+    public AppUser registerAppUser(RequestAppUserDto user) {
 
         if (appUserRepo.existsByEmail(user.getEmail())) {
             throw new UserAlreadyExistsException("User is already registered. Please log in.");
         }
 
-        if ("ROLE_ADMIN".equals(user.getRole().name())) { // Assuming role is an Enum
-            AppUser newAdmin = modelMapper.map(user, AppUser.class);
-            return appUserRepo.save(newAdmin); // Return the saved entity
+            AppUser newUser = modelMapper.map(user, AppUser.class);
+            return appUserRepo.save(newUser); // Return the saved entity
         }
 
-        throw new InvalidArgumentExeception("Invalid role. Only ROLE_ADMIN is allowed.");
 
 
-    }
+
+
 
     @Override
-    public List<AppUser> getAllAdminUsers() {
-        Role roleName = ROLE_ADMIN;
-        List<AppUser> userList = appUserRepo.findAllByRole(roleName);
+    public List<AppUser> getAllAppUsers() {
+
+        List<AppUser> userList = appUserRepo.findAll();
         if(userList.isEmpty()){
-            throw  new NoDataFoundException("no Admins are added to Appusers ");
+            throw  new NoDataFoundException("no users are added to Appusers ");
         }
         return userList;
     }
 
     @Override
-    public AppUser getAdminUserById(Long id) {
+    public AppUser getAppUserById(Long id) {
         return appUserRepo.findById(id)
-                .orElseThrow(() -> new NoDataFoundException("AdminUser iss not found . please register the user"));
+                .orElseThrow(() -> new NoDataFoundException("User is not found . please register the user"));
     }
 
     @Override
-    public AppUser deleteAdminUser(Long id) {
+    public AppUser deleteAppUser(Long id) {
         Optional<AppUser> existingUser = appUserRepo.findById(id);
         if (existingUser.isEmpty()) {
-            throw new NoDataFoundException("user is not a Admin user. please register the user");
+            throw new NoDataFoundException("user is not found. please register the user");
         }
         appUserRepo.deleteById(id);
         return existingUser.get();
     }
 
     @Override
-    public AppUser updateAdminUser(Long id, RequestAdminDto updatedUser) {
+    public AppUser updateAppUser(Long id, RequestAppUserDto updatedUser) {
         Optional<AppUser> existingUser = appUserRepo.findById(id);
         if (existingUser.isEmpty()) {
             throw new NoDataFoundException("user is not a Admin user. please register the user");
