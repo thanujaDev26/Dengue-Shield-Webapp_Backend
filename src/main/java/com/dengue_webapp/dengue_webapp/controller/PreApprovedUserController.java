@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/admin")
+@RequestMapping("/api/v1/user")
 //user registration for pre approved users and admins
 public class PreApprovedUserController {
     @Autowired
