@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static com.dengue_webapp.dengue_webapp.model.enums.Role.ROLE_ADMIN;
@@ -32,6 +33,7 @@ public class AppUserServiceImpl implements AppUserService {
         }
 
             AppUser newUser = modelMapper.map(user, AppUser.class);
+            //need to hash the password.
             return appUserRepo.save(newUser); // Return the saved entity
         }
 
@@ -52,8 +54,14 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Override
     public AppUser getAppUserById(Long id) {
-        return appUserRepo.findById(id)
-                .orElseThrow(() -> new NoDataFoundException("User is not found . please register the user"));
+        Optional<AppUser> existingUser = appUserRepo.findById(id);
+        System.out.println(existingUser.get());
+        if (existingUser.isEmpty()) {
+            throw new NoDataFoundException("user is not found. please register the user");
+        }
+
+        return existingUser.get();
+
     }
 
     @Override
@@ -67,13 +75,35 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
-    public AppUser updateAppUser(Long id, RequestAppUserDto updatedUser) {
+    public AppUser updateAppUser(Long id, Map<String ,Object> Updates) {
         Optional<AppUser> existingUser = appUserRepo.findById(id);
+       // System.out.println(existingUser);
         if (existingUser.isEmpty()) {
             throw new NoDataFoundException("user is not a Admin user. please register the user");
         }
         AppUser userToUpdate = existingUser.get();
-        modelMapper.map(updatedUser, userToUpdate);  // Update fields of the existing user
+        Updates.forEach((key,value) -> {
+                 switch (key){
+                     case "name" :
+                         userToUpdate.setName((String) value);
+                         break;
+                     case "email" :
+                         userToUpdate.setEmail((String) value);
+                         break;
+                     case "password" :
+                         userToUpdate.setPassword((String) value);
+                         break;
+                     case "role" :
+                         userToUpdate.setRole(Role.valueOf((String) value));
+                         break;
+                     default:
+                         throw new InvalidArgumentExeception("Invalid feild name " +key);
+                 }
+
+                }
+
+        );
+
         AppUser updatedUserResponse = appUserRepo.save(userToUpdate);
         return updatedUserResponse;
     }

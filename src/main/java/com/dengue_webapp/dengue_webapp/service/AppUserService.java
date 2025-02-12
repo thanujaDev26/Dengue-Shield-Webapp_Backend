@@ -4,6 +4,7 @@ import com.dengue_webapp.dengue_webapp.dto.request.RequestAppUserDto;
 import com.dengue_webapp.dengue_webapp.model.entity.AppUser;
 
 import java.util.List;
+import java.util.Map;
 
 public interface AppUserService {
     AppUser registerAppUser(RequestAppUserDto user);
@@ -14,5 +15,5 @@ public interface AppUserService {
 
     AppUser deleteAppUser(Long id);
 
-    AppUser updateAppUser(Long id, RequestAppUserDto updatedUser);
+    AppUser updateAppUser(Long id, Map<String ,Object> Updates);
 }
