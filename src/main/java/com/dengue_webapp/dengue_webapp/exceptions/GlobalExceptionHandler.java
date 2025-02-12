@@ -16,7 +16,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(NoDataFoundException.class)
-    public ResponseEntity<StandardResponse> handleDatabaseError(NoDataFoundException ex) {
+    public ResponseEntity<StandardResponse>handleNoDataFoundException(NoDataFoundException ex) {
         StandardResponse response = new StandardResponse(404, ex.getMessage(), null);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
