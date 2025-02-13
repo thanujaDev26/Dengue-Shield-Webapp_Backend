@@ -27,6 +27,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
+    @ExceptionHandler(DataAlreadyExistsException.class)
+    public ResponseEntity<StandardResponse> handleDataAlreadyExistsException(DataAlreadyExistsException ex) {
+        StandardResponse response = new StandardResponse(409, ex.getMessage(), null);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<StandardResponse> handleGenericError(Exception ex) {
         StandardResponse response = new StandardResponse(500, "Unexpected error occurred", null);

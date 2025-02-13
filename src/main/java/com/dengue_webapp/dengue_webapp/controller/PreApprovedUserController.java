@@ -11,9 +11,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/user")
+@RequestMapping("/api/v1/preuser")
 //user registration for pre approved users and admins
 public class PreApprovedUserController {
     @Autowired
@@ -21,7 +22,7 @@ public class PreApprovedUserController {
 
 
     // ✅ Create/Register a pre-approved user
-    @PostMapping("/preapproved-users")
+    @PostMapping("/adduser")
     public ResponseEntity<StandardResponse> addPreApprovedUser(@RequestBody RequestPreApprovedUserDto user) {
 
             PreApprovedUser savedUser = preApprovedUserService.addPreApprovedUser(user);
@@ -48,8 +49,8 @@ public class PreApprovedUserController {
 
     // ✅ Update a pre-approved user
     @PatchMapping("/preapproved-users/{id}")
-    public ResponseEntity<StandardResponse> updatePreApprovedUser(@PathVariable Long id, @RequestBody RequestPreApprovedUserDto updatedUser) {
-           PreApprovedUser UpdatedUser = preApprovedUserService.updatePreApprovedUser(id, updatedUser);
+    public ResponseEntity<StandardResponse> updatePreApprovedUser(@PathVariable Long id, @RequestBody Map<String ,Object> Updates) {
+           PreApprovedUser UpdatedUser = preApprovedUserService.updatePreApprovedUser(id, Updates);
         StandardResponse response = new StandardResponse(200, "Pre-approved user updated successfully",UpdatedUser);
         return ResponseEntity.status(HttpStatus.OK).body(response);
 

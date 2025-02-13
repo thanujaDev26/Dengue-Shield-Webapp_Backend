@@ -5,8 +5,14 @@ import com.dengue_webapp.dengue_webapp.exceptions.InvalidArgumentExeception;
 import com.dengue_webapp.dengue_webapp.exceptions.NoDataFoundException;
 import com.dengue_webapp.dengue_webapp.exceptions.UserAlreadyExistsException;
 import com.dengue_webapp.dengue_webapp.model.entity.AppUser;
+import com.dengue_webapp.dengue_webapp.model.entity.MOHOfficer;
+import com.dengue_webapp.dengue_webapp.model.entity.PHIOfficer;
+import com.dengue_webapp.dengue_webapp.model.entity.PreApprovedUser;
 import com.dengue_webapp.dengue_webapp.model.enums.Role;
 import com.dengue_webapp.dengue_webapp.repository.AppUserRepo;
+import com.dengue_webapp.dengue_webapp.repository.MOHRepo;
+import com.dengue_webapp.dengue_webapp.repository.PHIRepo;
+import com.dengue_webapp.dengue_webapp.repository.PreApprovedUserRepo;
 import com.dengue_webapp.dengue_webapp.service.AppUserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,27 +30,55 @@ public class AppUserServiceImpl implements AppUserService {
     private AppUserRepo appUserRepo;
 
     @Autowired
+    private PreApprovedUserRepo preApprovedUserRepo;
+    @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private MOHRepo mohRepo;
+
+    @Autowired
+    private PHIRepo phiRepo;
     @Override
     public AppUser registerAppUser(RequestAppUserDto user) {
-
         if (appUserRepo.existsByEmail(user.getEmail())) {
             throw new UserAlreadyExistsException("User is already registered. Please log in.");
         }
 
-            AppUser newUser = modelMapper.map(user, AppUser.class);
-            //need to hash the password.
-            return appUserRepo.save(newUser); // Return the saved entity
+        PreApprovedUser preApprovedUser = preApprovedUserRepo.findByEmail(user.getEmail());
+
+        if (preApprovedUser == null) {
+            throw new NoDataFoundException("User Email is not registered as MOH or PHI");
         }
 
+        // Map DTO to AppUser entity
+        AppUser newUser = modelMapper.map(user, AppUser.class);
+        newUser.setRole(preApprovedUser.getRole());
 
+        // Associate with respective officer role
+        if (preApprovedUser.getRole() == Role.ROLE_MOH) {
+            MOHOfficer mohOfficer = new MOHOfficer();
+            mohOfficer.setAppuser(newUser);
+            mohRepo.save(mohOfficer);
+        } else {
+            PHIOfficer phiOfficer = new PHIOfficer();
+            phiOfficer.setAppuser(newUser);
+            phiRepo.save(phiOfficer);
+        }
+
+        return appUserRepo.save(newUser);
+    }
+
+
+
+    //need to hash the password.
+             // Return the saved entity
 
 
 
 
     @Override
     public List<AppUser> getAllAppUsers() {
-
         List<AppUser> userList = appUserRepo.findAll();
         if(userList.isEmpty()){
             throw  new NoDataFoundException("no users are added to Appusers ");
