@@ -46,7 +46,7 @@ public class AppUserServiceImpl implements AppUserService {
         }
 
         PreApprovedUser preApprovedUser = preApprovedUserRepo.findByEmail(user.getEmail());
-
+        System.out.println(preApprovedUser);
         if (preApprovedUser == null) {
             throw new NoDataFoundException("User Email is not registered as MOH or PHI");
         }
@@ -54,7 +54,8 @@ public class AppUserServiceImpl implements AppUserService {
         // Map DTO to AppUser entity
         AppUser newUser = modelMapper.map(user, AppUser.class);
         newUser.setRole(preApprovedUser.getRole());
-
+        appUserRepo.save(newUser);
+        System.out.println(newUser);
         // Associate with respective officer role
         if (preApprovedUser.getRole() == Role.ROLE_MOH) {
             MOHOfficer mohOfficer = new MOHOfficer();
@@ -66,7 +67,7 @@ public class AppUserServiceImpl implements AppUserService {
             phiRepo.save(phiOfficer);
         }
 
-        return appUserRepo.save(newUser);
+        return newUser;
     }
 
 

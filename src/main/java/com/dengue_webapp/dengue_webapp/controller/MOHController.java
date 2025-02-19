@@ -4,10 +4,7 @@ package com.dengue_webapp.dengue_webapp.controller;
 import com.dengue_webapp.dengue_webapp.dto.request.*;
 import com.dengue_webapp.dengue_webapp.dto.response.ResponseDiseaseNotificationDto;
 import com.dengue_webapp.dengue_webapp.dto.response.ResponseMOHDto;
-import com.dengue_webapp.dengue_webapp.model.entity.AppUser;
-import com.dengue_webapp.dengue_webapp.model.entity.InwardDocument;
-import com.dengue_webapp.dengue_webapp.model.entity.MOHOfficer;
-import com.dengue_webapp.dengue_webapp.model.entity.PHIOfficer;
+import com.dengue_webapp.dengue_webapp.model.entity.*;
 import com.dengue_webapp.dengue_webapp.service.MOHService;
 import com.dengue_webapp.dengue_webapp.util.StandardResponse;
 import org.modelmapper.ModelMapper;
@@ -21,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/api/v1/moh")
 public class MOHController {
 
@@ -32,7 +30,8 @@ public class MOHController {
 
     //we pass moh id to frontend when moh login.
     @PatchMapping("/updateMoh/{id}")
-    public ResponseEntity<StandardResponse> updateMohOfficer(@PathVariable(value = "id")  Long id, @RequestBody Map<String ,Object> Updates) {
+    public ResponseEntity<StandardResponse> updateMohOfficer(@PathVariable Long id, @RequestBody Map<String ,Object> Updates) {
+        System.out.println("hello world");
         MOHOfficer UpdatedUser = mohService.updateMohOfficer(id, Updates);
         StandardResponse response = new StandardResponse(200, "user updated successfully",UpdatedUser);
         return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -41,7 +40,7 @@ public class MOHController {
 
     @PostMapping("/assignPhiOfficers")
     public ResponseEntity<StandardResponse> assignPHIOfficers (@RequestBody RequestMOhInfo mohInfo){
-        List<PHIOfficer> phiOfficerList = mohService.assignPHIOfficers(mohInfo.getId(),mohInfo.getBranch(),mohInfo.getDistrict());
+        List<PHIOfficer> phiOfficerList = mohService.assignPHIOfficers(mohInfo);
         StandardResponse response = new StandardResponse(200, "user updated successfully",phiOfficerList);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -93,57 +92,12 @@ public class MOHController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @PostMapping("/sendDiseaseNotification")
 
-    @PostMapping("/saveInwardDocument")
-    public ResponseEntity<StandardResponse> saveInwardDocument(@RequestBody RequestInwardDocumentDto document) {
-
-        InwardDocument savedDocument = mohService.saveInwardDocument( document);
-        StandardResponse response = new StandardResponse(201, " user added successfully", savedDocument);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-
-    }
-
-    @GetMapping("/getAllInwardDocument")
-    public ResponseEntity<StandardResponse> getAllInwardDocument() {
-
-        List<InwardDocument> usavedDocumentList = mohService.getAllInwardDocument();
-        StandardResponse response = new StandardResponse(200, "Fetched all  users", usavedDocumentList);
-        return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/getInwardDocument/{id}")
-    public ResponseEntity<StandardResponse> getInwardDocumentById(@PathVariable  Long id) {
-
-        InwardDocument savedDocument = mohService.getInwardDocumentById(id);
-        StandardResponse response = new StandardResponse(200, " user fetched successfully", savedDocument);
-        return ResponseEntity.status(HttpStatus.OK).body(response);  // Use HttpStatus.OK (200)
-    }
-
-    @PatchMapping("/updateAppUser/{id}")
-    public ResponseEntity<StandardResponse> updateInwardDocument(@PathVariable(value = "id")  Long id, @RequestBody Map<String ,Object> Updates) {
-
-        InwardDocument updatedDocument = mohService.updateInwardDocument(id, Updates);
-        StandardResponse response = new StandardResponse(200, "user updated successfully",updatedDocument);
+    public ResponseEntity<StandardResponse> sendDiseaseNotification(@RequestBody RequestMessageDto message) {
+        Message savedMessage = mohService.sendDiseaseNotification(message);
+        StandardResponse response = new StandardResponse(200, " user deleted successfully",savedMessage);
         return ResponseEntity.status(HttpStatus.OK).body(response);
-
-    }
-
-    @DeleteMapping("/deleteInwardDocument/{id}")
-    public ResponseEntity<StandardResponse> deleteInwardDocument(@PathVariable Long id) {
-        InwardDocument deletedDocument = mohService.deleteInwardDocument(id);
-        StandardResponse response = new StandardResponse(200, " user deleted successfully",deletedDocument);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
-    }
-
-
-    @PostMapping("/sendInwardDocument")
-
-    public ResponseEntity<StandardResponse> sendInwardDocument(@RequestBody RequestInwardDocumentDto document) {
-
-        InwardDocument savedDocument = mohService.saveInwardDocument( document);
-        StandardResponse response = new StandardResponse(201, " user added successfully", savedDocument);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-
     }
 
 }

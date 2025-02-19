@@ -6,6 +6,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Data
 @AllArgsConstructor
@@ -17,7 +21,7 @@ public class PHIOfficer {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "user_id", nullable = false)
     private AppUser appuser;
 
@@ -36,8 +40,18 @@ public class PHIOfficer {
     private String branch;
 
     @ManyToOne
-@JoinColumn(name = "moh_officer_id", nullable = false)
-private MOHOfficer mohOfficer;
+  @JoinColumn(name = "moh_officer_id")
+  private MOHOfficer mohOfficer;
 
+    @OneToMany(mappedBy = "phi", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<InwardDocument> inwardDocuments = new ArrayList<>();
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDate createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDate.now(); // ✅ Ensures accurate date when saving
+    }
     
 }

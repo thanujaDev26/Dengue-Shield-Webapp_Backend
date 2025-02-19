@@ -14,7 +14,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Data
 public class RequestInwardDocumentDto {
-
+    private long phiId;
     private String originalNumber;
     private String inwardNumber;
     private LocalDate date;

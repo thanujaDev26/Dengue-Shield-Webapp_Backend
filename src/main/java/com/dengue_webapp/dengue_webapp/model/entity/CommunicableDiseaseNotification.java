@@ -45,6 +45,11 @@ public class CommunicableDiseaseNotification {
     @Column(name = "medical_officer", nullable = false, length = 100)
     private String medicalOfficer;  // Fixed variable name
 
+    @ManyToOne
+    @JoinColumn(name = "moh_id", nullable = false)
+    private MOHOfficer mohOfficer;
+
+
     @OneToOne
     @JoinColumn(name = "patient_id", nullable = false) // Foreign key reference
     private Patient patient;

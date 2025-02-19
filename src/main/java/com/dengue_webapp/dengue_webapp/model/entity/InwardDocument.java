@@ -41,7 +41,16 @@ public class InwardDocument {
     @Column(name="remarks",nullable = true)
     private String remarks;
 
+    @ManyToOne
+    @JoinColumn(name = "phi_id", nullable = false)
+    private PHIOfficer phi;
 
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDate createdAt;
 
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDate.now(); // ✅ Ensures accurate date when saving
+    }
 
 }

@@ -4,12 +4,14 @@ package com.dengue_webapp.dengue_webapp.model.entity;
 import com.dengue_webapp.dengue_webapp.model.enums.MessageStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
 @Entity
+@Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -28,12 +30,12 @@ public class Message {
     private PHIOfficer phiOfficer; // PHI who received the message
 
     @OneToOne
-    @JoinColumn(name = "inward_document_id", nullable = false)
-    private InwardDocument inwardDocument; // Linked inward document
+    @JoinColumn(name = "h544_id", nullable = false)
+    private CommunicableDiseaseNotification h544; // Linked inward document
 
     @OneToOne
-    @JoinColumn(name = "outward_document_id", nullable = true)
-    private OutwardDocument outwardDocument; // Linked outward document (nullable because it is sent later)
+    @JoinColumn(name = "h411_id", nullable = true)
+    private CommunicableDiseaseReport h411; // Linked outward document (nullable because it is sent later)
 
     @Enumerated(EnumType.STRING)
     private MessageStatus status; // SENT, PENDING, COMPLETED

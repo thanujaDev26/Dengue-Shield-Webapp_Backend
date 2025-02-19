@@ -26,24 +26,24 @@ public class Patient {
     @Column(nullable = false)
     private String notifierStatus; // Fixed casing
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String religion;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String race;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String telephoneNumber;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String occupation;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String gender;
 
     @Column(nullable = false)
     private String nameOfNotifier; // Fixed casing
 
-    @Column(nullable = false, updatable = false)
-    private LocalDate dateOfBirth; // Changed to LocalDate
+    @Column(nullable = false)
+    private String Age; // Changed to LocalDate
 }

@@ -1,8 +1,6 @@
 package com.dengue_webapp.dengue_webapp.service.impl;
 
-import com.dengue_webapp.dengue_webapp.dto.request.RequestDiseaseNotificationDto;
-import com.dengue_webapp.dengue_webapp.dto.request.RequestInwardDocumentDto;
-import com.dengue_webapp.dengue_webapp.dto.request.RequestMOHDto;
+import com.dengue_webapp.dengue_webapp.dto.request.*;
 import com.dengue_webapp.dengue_webapp.dto.response.ResponseDiseaseNotificationDto;
 import com.dengue_webapp.dengue_webapp.dto.response.ResponsePatientDto;
 import com.dengue_webapp.dengue_webapp.exceptions.DataAlreadyExistsException;
@@ -10,6 +8,7 @@ import com.dengue_webapp.dengue_webapp.exceptions.InvalidArgumentExeception;
 import com.dengue_webapp.dengue_webapp.exceptions.NoDataFoundException;
 import com.dengue_webapp.dengue_webapp.exceptions.UserAlreadyExistsException;
 import com.dengue_webapp.dengue_webapp.model.entity.*;
+import com.dengue_webapp.dengue_webapp.model.enums.MessageStatus;
 import com.dengue_webapp.dengue_webapp.model.enums.Role;
 import com.dengue_webapp.dengue_webapp.repository.*;
 import com.dengue_webapp.dengue_webapp.service.MOHService;
@@ -19,7 +18,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import java.sql.Date;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -47,16 +49,23 @@ public class MOHServiceImpl implements MOHService {
     @Autowired
     private InwardDocumentRepo inwardDocumentRepo;
 
+    @Autowired
+    private MessageRepo messageRepo;
+
     @Override
-    public List<PHIOfficer> assignPHIOfficers(Long id, String branch, String district) {
+    public List<PHIOfficer> assignPHIOfficers( RequestMOhInfo mohinfo) {
         // Fetch MOHOfficer and handle if not found
-        MOHOfficer mohOfficer = mohRepo.findById(id)
+        System.out.println(mohinfo);
+        MOHOfficer mohOfficer = mohRepo.findById(mohinfo.getId())
                 .orElseThrow(() -> new NoDataFoundException("MOH Officer not found. Please register or provide a correct ID."));
-        List<PHIOfficer> phiOfficers = phiRepo.findAllByDistrictAndBranch(district, branch);
+        List<PHIOfficer> phiOfficers = phiRepo.findAllByDistrictAndAndBranch(mohinfo.getDistrict(), mohinfo.getBranch());
+        System.out.println(phiOfficers);
         if (phiOfficers.isEmpty()) {
-            throw new NoDataFoundException("No PHI Officers found in the given district and branch. Please register PHI Officers.");
+            throw new NoDataFoundException("No PHI Officers found in the given district and branch. Please register PHI Officers or add district and branch");
         }
-        mohOfficer.setPhiOfficers(phiOfficers);
+        List<PHIOfficer> list = mohOfficer.getPhiOfficers();
+        phiOfficers.forEach((phi) -> list.add(phi));
+        mohOfficer.setPhiOfficers(list);
         mohRepo.save(mohOfficer);
         return phiOfficers;
     }
@@ -71,19 +80,19 @@ public class MOHServiceImpl implements MOHService {
             updates.forEach((key, value) -> {
                 switch (key.toLowerCase()) {
                     case "mobilenumber":
-                        userToUpdate.setMobilenumber((String) value);
+                        userToUpdate.setMobilenumber(((String) value));
                         break;
                     case "district":
-                        userToUpdate.setDistrict((String) value);
+                        userToUpdate.setDistrict(((String) value).toLowerCase());
                         break;
                     case "branch":
-                        userToUpdate.setBranch((String) value);
+                        userToUpdate.setBranch(((String) value).toLowerCase());
                         break;
                     default:
                         throw new InvalidArgumentExeception("Invalid field name: " + key);
                 }
             });
-            assignPHIOfficers(userToUpdate.getId(), userToUpdate.getBranch(), userToUpdate.getDistrict());
+            //`assignPHIOfficers(userToUpdate.getId(), userToUpdate.getBranch(), userToUpdate.getDistrict());
             return mohRepo.save(userToUpdate);
         }
 
@@ -212,47 +221,40 @@ public class MOHServiceImpl implements MOHService {
     }
 
     @Override
-    public InwardDocument saveInwardDocument(RequestInwardDocumentDto document) {
-        if(inwardDocumentRepo.existsByOriginalNumberAndInwardNumber(document.getOriginalNumber(),document.getInwardNumber())){
-            throw new DataAlreadyExistsException("Inward document is already exists");
-        }
-        InwardDocument newDocument = modelMapper.map(document,InwardDocument.class);
-        return inwardDocumentRepo.save(newDocument);
-
-    }
-
-    @Override
-    public List<InwardDocument> getAllInwardDocument() {
-        List<InwardDocument> documentList = inwardDocumentRepo.findAll();
-        if(documentList.isEmpty()){
-            throw  new NoDataFoundException("no users are added to Appusers ");
-        }
-        return documentList;
-    }
-
-    @Override
-    public InwardDocument getInwardDocumentById(Long id) {
-        Optional<InwardDocument> document = inwardDocumentRepo.findById(id);
-        if (document.isEmpty()) {
-            throw new NoDataFoundException("user is not found. please register the user");
+    public Message sendDiseaseNotification(RequestMessageDto messageDto) {
+        // Find the MOHOfficer by ID
+        Optional<MOHOfficer> mohOfficerOpt = mohRepo.findById(messageDto.getMohOfficerId());
+        if (mohOfficerOpt.isEmpty()) {
+            throw new NoDataFoundException("MOH Officer not found.");
         }
 
-        return document.get();
-    }
-
-    @Override
-    public InwardDocument updateInwardDocument(Long id, Map<String, Object> updates) {
-        return null;
-    }
-
-    @Override
-    public InwardDocument deleteInwardDocument(Long id) {
-        Optional<InwardDocument> existingDocument = inwardDocumentRepo.findById(id);
-        if (existingDocument.isEmpty()) {
-            throw new NoDataFoundException("Inward document is not found");
+        // Find the PHIOfficer by email
+        Optional<PHIOfficer> phiOfficerOpt = phiRepo.findByEmail(messageDto.getPhiOfficerEmail());
+        if (phiOfficerOpt.isEmpty()) {
+            throw new NoDataFoundException("PHI Officer not found.");
         }
-        inwardDocumentRepo.deleteById(id);
-        return existingDocument.get();
+
+        // Get MOH Officer's notifications list
+        List<CommunicableDiseaseNotification> notifications = mohOfficerOpt.get().getNotifications();
+        if (notifications == null || notifications.isEmpty()) {
+            throw new NoDataFoundException("No disease notifications found for this MOH Officer.");
+        }
+
+        // Get the last notification
+        CommunicableDiseaseNotification h544 = notifications.get(notifications.size() - 1);
+
+        // Create a new message
+        Message message = Message.builder()
+                .mohOfficer(mohOfficerOpt.get()) // Set MOH Officer
+                .phiOfficer(phiOfficerOpt.get()) // Set PHI Officer
+                .h544(h544) // Set linked Inward Document
+                .status(MessageStatus.PENDING) // Default status
+                .createdAt(Date.from(Instant.now())) // Current timestamp
+                .updatedAt(Date.from(Instant.now())) // Current timestamp
+                .build();
+
+        // Save the message entity to the database
+        return messageRepo.save(message);
     }
 
 

@@ -7,12 +7,18 @@ import org.springframework.data.jpa.repository.Query;
 
 
 import java.util.List;
+import java.util.Optional;
 
 public interface PHIRepo extends JpaRepository<PHIOfficer, Long> {
 
-    public List<PHIOfficer> findAllByDistrictAndBranch(String district,String branch) ;
     @Query(value = "SELECT * FROM phi WHERE name LIKE ?1 OR id LIKE ?1", nativeQuery = true)
     public List<PHIOfficer> searchPHIOfficer(String searchText, Pageable pageable);
 
     boolean existsByAppuser_Email(String email);
+
+    PHIOfficer findByAppuser_Email(String phiOfficerEmail);
+
+    List<PHIOfficer> findAllByDistrictAndAndBranch(String district, String branch);
+
+    Optional<PHIOfficer> findByEmail(String phiOfficerEmail);
 }
