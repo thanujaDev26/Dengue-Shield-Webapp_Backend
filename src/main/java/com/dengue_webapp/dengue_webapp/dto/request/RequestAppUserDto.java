@@ -16,7 +16,7 @@ public class RequestAppUserDto {
 
     private String password;
 
-    private Role role;  // ADMIN, MOH, PHI
+    //private Role role;  // ADMIN, MOH, PHI
 
 
 }

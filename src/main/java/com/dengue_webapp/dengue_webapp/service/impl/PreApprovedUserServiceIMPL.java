@@ -1,16 +1,20 @@
 package com.dengue_webapp.dengue_webapp.service.impl;
 
 import com.dengue_webapp.dengue_webapp.dto.request.RequestPreApprovedUserDto;
+import com.dengue_webapp.dengue_webapp.exceptions.InvalidArgumentExeception;
 import com.dengue_webapp.dengue_webapp.exceptions.NoDataFoundException;
 import com.dengue_webapp.dengue_webapp.exceptions.UserAlreadyExistsException;
 import com.dengue_webapp.dengue_webapp.model.entity.PreApprovedUser;
+import com.dengue_webapp.dengue_webapp.model.enums.Role;
 import com.dengue_webapp.dengue_webapp.repository.PreApprovedUserRepo;
 import com.dengue_webapp.dengue_webapp.service.PreApprovedUserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -65,13 +69,29 @@ public class PreApprovedUserServiceIMPL implements PreApprovedUserService {
     }
 
     @Override
-    public PreApprovedUser updatePreApprovedUser(Long id, RequestPreApprovedUserDto updatedUser) {
+    public PreApprovedUser updatePreApprovedUser(Long id,  Map<String ,Object> Updates) {
         Optional<PreApprovedUser> existingUser = preApprovedUserRepo.findById(id);
         if (existingUser.isEmpty()) {
             throw new NoDataFoundException("user is not a PreApproved user. please register the user");
         }
         PreApprovedUser userToUpdate = existingUser.get();
-        modelMapper.map(updatedUser, userToUpdate);  // Update fields of the existing user
+        Updates.forEach((key,value) -> {
+                    switch (key){
+                        case "name" :
+                            userToUpdate.setName((String) value);
+                            break;
+                        case "email" :
+                            userToUpdate.setEmail((String) value);
+                            break;
+
+                        case "role" :
+                            userToUpdate.setRole(Role.valueOf((String) value));
+                            break;
+                        default:
+                            throw new InvalidArgumentExeception("Invalid feild name " +key);
+                    }
+
+                });
         PreApprovedUser updatedUserResponse = preApprovedUserRepo.save(userToUpdate);
         return updatedUserResponse;
     }

@@ -10,4 +10,6 @@ import org.springframework.stereotype.Repository;
 @EnableJpaRepositories
 public interface PreApprovedUserRepo extends JpaRepository<PreApprovedUser,Long> {
     boolean existsByEmail(String email);
+
+    PreApprovedUser findByEmail(String email);
 }
