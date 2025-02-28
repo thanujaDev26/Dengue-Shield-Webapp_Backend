@@ -71,6 +71,7 @@ public class MOHController {
 
     @GetMapping("/getAllDiseaseNotification")
     public ResponseEntity<StandardResponse> getAllDiseaseNotification() {
+
         List<ResponseDiseaseNotificationDto> notifyList =  mohService.getAllNotifications();
         StandardResponse response = new StandardResponse(200, "get all  Notificattions successfully", notifyList);
         return ResponseEntity.ok(response);

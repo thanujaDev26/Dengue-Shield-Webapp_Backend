@@ -33,6 +33,13 @@ public class MOHOfficer {
     @Column(name = "branch", length = 255)
     private String branch;
 
+    public MOHOfficer (AppUser appUser,String mobilenumber,String district,String branch){
+        this.appuser = appUser;
+        this.mobilenumber = mobilenumber;
+        this.district = district;
+        this.branch = branch;
+    }
+
     // ✅ One MOH Officer manages multiple PHI officers
     @OneToMany(mappedBy = "mohOfficer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PHIOfficer> phiOfficers = new ArrayList<>();

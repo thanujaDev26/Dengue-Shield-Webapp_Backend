@@ -19,5 +19,5 @@ public class RequestPatientDto {
     private String occupation;
     private String gender;
     private String nameOfNotifier; // Fixed casing
-    private LocalDate dateOfBirth;
+    private  String Age;
 }

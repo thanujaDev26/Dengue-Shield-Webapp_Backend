@@ -1,6 +1,8 @@
 package com.dengue_webapp.dengue_webapp.service.impl;
 
 import com.dengue_webapp.dengue_webapp.dto.request.RequestAppUserDto;
+import com.dengue_webapp.dengue_webapp.dto.request.RequestLoginDto;
+import com.dengue_webapp.dengue_webapp.dto.request.RequestUserDto;
 import com.dengue_webapp.dengue_webapp.exceptions.InvalidArgumentExeception;
 import com.dengue_webapp.dengue_webapp.exceptions.NoDataFoundException;
 import com.dengue_webapp.dengue_webapp.exceptions.UserAlreadyExistsException;
@@ -40,30 +42,36 @@ public class AppUserServiceImpl implements AppUserService {
     @Autowired
     private PHIRepo phiRepo;
     @Override
-    public AppUser registerAppUser(RequestAppUserDto user) {
+    public AppUser registerUser (RequestUserDto user) {
         if (appUserRepo.existsByEmail(user.getEmail())) {
             throw new UserAlreadyExistsException("User is already registered. Please log in.");
         }
-
+        System.out.println("checkpoint 1");
+        System.out.println(user);
         PreApprovedUser preApprovedUser = preApprovedUserRepo.findByEmail(user.getEmail());
-        System.out.println(preApprovedUser);
+       System.out.println(preApprovedUser);
         if (preApprovedUser == null) {
             throw new NoDataFoundException("User Email is not registered as MOH or PHI");
         }
-
+        System.out.println("checkpoint 2");
         // Map DTO to AppUser entity
         AppUser newUser = modelMapper.map(user, AppUser.class);
         newUser.setRole(preApprovedUser.getRole());
-        appUserRepo.save(newUser);
-        System.out.println(newUser);
+        System.out.println("checkpoint 3");
+        try {
+            appUserRepo.save(newUser);
+            System.out.println("checkpoint 4"); // Check if this prints now
+        } catch (Exception e) {
+            e.printStackTrace(); // Print the full stack trace
+        }        System.out.println(newUser);
         // Associate with respective officer role
-        if (preApprovedUser.getRole() == Role.ROLE_MOH) {
-            MOHOfficer mohOfficer = new MOHOfficer();
-            mohOfficer.setAppuser(newUser);
+        if (user.getRole() .equals(Role.ROLE_MOH.toString())) {
+            MOHOfficer mohOfficer = new MOHOfficer(newUser, user.getMobilenumber(), user.getDistrict(), user.getBranch());
+            System.out.println(mohOfficer);
             mohRepo.save(mohOfficer);
         } else {
-            PHIOfficer phiOfficer = new PHIOfficer();
-            phiOfficer.setAppuser(newUser);
+            PHIOfficer phiOfficer = new PHIOfficer(newUser, user.getMobilenumber(), user.getDistrict(), user.getBranch(), user.getArea());
+            System.out.println(phiOfficer);
             phiRepo.save(phiOfficer);
         }
 
@@ -142,5 +150,37 @@ public class AppUserServiceImpl implements AppUserService {
         AppUser updatedUserResponse = appUserRepo.save(userToUpdate);
         return updatedUserResponse;
     }
+
+    @Override
+    public Object loginAppUser(RequestLoginDto user) {
+        // Check if the user exists
+        AppUser registeredUser = appUserRepo.findByEmail(user.getEmail());
+        if (registeredUser == null) {
+            throw new NoDataFoundException("User is not registered, please register.");
+        }
+        System.out.println(registeredUser);
+        // Check password (Use a password encoder if passwords are hashed)
+        if (!registeredUser.getPassword().equals(user.getPassword())) {
+            throw new InvalidArgumentExeception("Incorrect password.");
+        }
+
+        // Check role and return appropriate user
+        if ("ROLE_MOH".equals(registeredUser.getRole().toString())) {
+            MOHOfficer mohUser = mohRepo.findByAppuser_Email(registeredUser.getEmail());
+            if (mohUser == null) {
+                throw new NoDataFoundException("MOH user not found.");
+            }
+            System.out.println(mohUser);
+            return mohUser;
+        } else {
+            PHIOfficer phiUser = phiRepo.findByAppuser_Email(registeredUser.getEmail());
+            if (phiUser == null) {
+                throw new NoDataFoundException("PHI user not found.");
+            }
+            System.out.println(phiUser);
+            return phiUser;
+        }
+    }
+
 
 }

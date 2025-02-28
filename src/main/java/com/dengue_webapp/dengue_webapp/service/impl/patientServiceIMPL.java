@@ -86,9 +86,9 @@ public class patientServiceIMPL implements PatientService {
                 case "telephoneNumber":
                     patientToUpdate.setTelephoneNumber((String) value);
                     break;
-                case "dateOfBirth":
+                case "age":
                     // Assuming you want to parse a LocalDate from a string
-                    patientToUpdate.setDateOfBirth(LocalDate.parse((String) value));
+                    patientToUpdate.setAge((String) value);
                     break;
                 case "nameOfNotifier":
                     patientToUpdate.setNameOfNotifier((String) value);

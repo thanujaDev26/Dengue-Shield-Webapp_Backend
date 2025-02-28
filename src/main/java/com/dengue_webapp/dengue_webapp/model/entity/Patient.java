@@ -45,5 +45,5 @@ public class Patient {
     private String nameOfNotifier; // Fixed casing
 
     @Column(nullable = false)
-    private String Age; // Changed to LocalDate
+    private String age; // Changed to LocalDate
 }

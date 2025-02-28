@@ -120,15 +120,21 @@ public class MOHServiceImpl implements MOHService {
 
     @Override
     public ResponseDiseaseNotificationDto saveDiseaseNotification(RequestDiseaseNotificationDto notification) {
+        System.out.println("hello");
         Optional<Patient> optionalPatient = patientRepo.findById(notification.getPatient().getNic());
+
         if (optionalPatient.isPresent()) {
             throw new UserAlreadyExistsException("Patient already exists. Please update the disease notification according to pateint nic.");
         }
+        System.out.println("yello");
         Patient newPatient = modelMapper.map(notification.getPatient(), Patient.class);
+
         newPatient = patientRepo.save(newPatient);
+        System.out.println(newPatient);
         CommunicableDiseaseNotification newNotify = modelMapper.map(notification, CommunicableDiseaseNotification.class);
         newNotify.setPatient(newPatient); // ✅ Assign saved patient
         newNotify = communicableDiseaseNotificationRepo.save(newNotify);
+        System.out.println(newNotify);
         return modelMapper.map(newNotify, ResponseDiseaseNotificationDto.class);
     }
 
@@ -229,8 +235,8 @@ public class MOHServiceImpl implements MOHService {
         }
 
         // Find the PHIOfficer by email
-        Optional<PHIOfficer> phiOfficerOpt = phiRepo.findByEmail(messageDto.getPhiOfficerEmail());
-        if (phiOfficerOpt.isEmpty()) {
+        PHIOfficer phiOfficerOpt = phiRepo.findByAppuser_Email(messageDto.getPhiOfficerEmail());
+        if (phiOfficerOpt == null) {
             throw new NoDataFoundException("PHI Officer not found.");
         }
 
@@ -246,7 +252,7 @@ public class MOHServiceImpl implements MOHService {
         // Create a new message
         Message message = Message.builder()
                 .mohOfficer(mohOfficerOpt.get()) // Set MOH Officer
-                .phiOfficer(phiOfficerOpt.get()) // Set PHI Officer
+                .phiOfficer(phiOfficerOpt) // Set PHI Officer
                 .h544(h544) // Set linked Inward Document
                 .status(MessageStatus.PENDING) // Default status
                 .createdAt(Date.from(Instant.now())) // Current timestamp
