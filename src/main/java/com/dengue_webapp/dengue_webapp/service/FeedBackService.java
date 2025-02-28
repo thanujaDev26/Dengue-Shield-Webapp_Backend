@@ -1,7 +1,6 @@
 package com.dengue_webapp.dengue_webapp.service;
 
-import com.dengue_webapp.dengue_webapp.model.Feedback;
-import org.springframework.stereotype.Service;
+import com.dengue_webapp.dengue_webapp.model.entity.Feedback;
 
 
 public interface FeedBackService {
