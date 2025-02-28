@@ -1,25 +1,23 @@
 package com.dengue_webapp.dengue_webapp.dto.request;
 
-import jakarta.persistence.Column;
+import com.dengue_webapp.dengue_webapp.model.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
-public class RequestPHIDto {
+public class RequestAppUserDto {
 
     private String name;
 
-    private String phone;
-
     private String email;
 
-    private String area;
+    private String password;
 
-    private String district;
+    //private Role role;  // ADMIN, MOH, PHI
 
-    private String branch;
 
 }
+

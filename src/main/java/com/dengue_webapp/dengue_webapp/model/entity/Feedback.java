@@ -1,4 +1,4 @@
-package com.dengue_webapp.dengue_webapp.model;
+package com.dengue_webapp.dengue_webapp.model.entity;
 
 
 import jakarta.persistence.*;
