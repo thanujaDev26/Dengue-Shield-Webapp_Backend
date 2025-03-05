@@ -18,9 +18,6 @@ public class CommunicableDiseaseNotification {
     @Column(name = "id", length = 45)
     private Long id;
 
-    @Column(name = "guardian_name", nullable = false, length = 100) // Added length
-    private String guardianName;
-
     @Column(nullable = false, length = 100)
     private String name;
 
@@ -42,8 +39,12 @@ public class CommunicableDiseaseNotification {
     @Column(name = "bed_number", nullable = false, length = 50)
     private String bedNumber;
 
-    @Column(name = "medical_officer", nullable = false, length = 100)
-    private String medicalOfficer;  // Fixed variable name
+
+    @Column(nullable = false)
+    private String nameOfNotifier; // Fixed casing
+
+    @Column(nullable = false)
+    private String notifierStatus; // Fixed casing
 
     @ManyToOne
     @JoinColumn(name = "moh_id", nullable = false)
@@ -55,3 +56,5 @@ public class CommunicableDiseaseNotification {
     private Patient patient;
 
 }
+
+/* */

@@ -23,8 +23,7 @@ public class AppUserController {
     private AppUserService appUserService;
 
     @PostMapping("/register")
-    public ResponseEntity<StandardResponse> registerAppUser(@RequestBody RequestUserDto user) {
-        System.out.println(user);
+    public ResponseEntity<StandardResponse> registerAppUser(@RequestBody RequestAppUserDto user) {
         AppUser savedUser = appUserService.registerUser(user);
         StandardResponse response = new StandardResponse(201, " user added successfully", savedUser);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);

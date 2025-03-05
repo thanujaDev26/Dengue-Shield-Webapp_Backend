@@ -108,7 +108,7 @@ public class MOHServiceImpl implements MOHService {
         Patient patient = patientRepo.findById(id)
                 .orElseThrow(() -> new NoDataFoundException("Patient not found. Please add this patient's details first."));
         ResponsePatientDto patientDto = modelMapper.map(patient, ResponsePatientDto.class);
-        CommunicableDiseaseNotification diseaseNotification = communicableDiseaseNotificationRepo.findByPatient_Nic(id);
+        CommunicableDiseaseNotification diseaseNotification = communicableDiseaseNotificationRepo.findByPatient_Id(id);
         if (diseaseNotification == null) {
             throw new NoDataFoundException("No disease notification found for this patient.");
         }
@@ -155,7 +155,7 @@ public class MOHServiceImpl implements MOHService {
     @Override
     public ResponseDiseaseNotificationDto updateDiseaseNotificationByNic(String nic, Map<String, Object> updates) {
         // Fetch the disease notification by patient NIC
-        CommunicableDiseaseNotification existingNotification = communicableDiseaseNotificationRepo.findByPatient_Nic(nic);
+        CommunicableDiseaseNotification existingNotification = communicableDiseaseNotificationRepo.findByPatient_Id(nic);
         if (existingNotification == null) {
             throw new NoDataFoundException("Disease notification not found for patient with NIC: " + nic);
         }
@@ -166,8 +166,8 @@ public class MOHServiceImpl implements MOHService {
         // Update fields in the notification
         updates.forEach((key, value) -> {
             switch (key) {
-                case "guardianName":
-                    notificationToUpdate.setGuardianName((String) value);
+                case "nameOfNotifier":
+                    notificationToUpdate.setNameOfNotifier((String) value);
                     break;
                 case "name":
                     notificationToUpdate.setName((String) value);
@@ -190,8 +190,8 @@ public class MOHServiceImpl implements MOHService {
                 case "bedNumber":
                     notificationToUpdate.setBedNumber((String) value);
                     break;
-                case "medicalOfficer":
-                    notificationToUpdate.setMedicalOfficer((String) value);
+                case "notifierStatus":
+                    notificationToUpdate.setNotifierStatus((String) value);
                     break;
                 default:
                     throw new InvalidArgumentExeception("Invalid field name: " + key);
@@ -214,7 +214,7 @@ public class MOHServiceImpl implements MOHService {
     @Override
     public ResponseDiseaseNotificationDto deleteDiseaseNotificationById(String id) {
         // Find existing notification
-        CommunicableDiseaseNotification existingNotification = communicableDiseaseNotificationRepo.findByPatient_Nic(id);
+        CommunicableDiseaseNotification existingNotification = communicableDiseaseNotificationRepo.findByPatient_Id(id);
         if (existingNotification == null) {
             throw new NoDataFoundException("diesease notification is not found. Please register the user.");
         }

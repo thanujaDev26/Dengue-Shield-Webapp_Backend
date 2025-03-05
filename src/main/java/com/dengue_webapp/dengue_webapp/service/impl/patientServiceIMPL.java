@@ -28,8 +28,8 @@ public class patientServiceIMPL implements PatientService {
     private ModelMapper modelMapper;
     @Override
     public Patient registerAppUser(RequestPatientDto user) {
-        if (patientRepo.existsById(user.getNic())) {
-            throw new UserAlreadyExistsException("Patient with Nic " + user.getNic() + " is already registered.");
+        if (patientRepo.existsById(user.getId())) {
+            throw new UserAlreadyExistsException("Patient " + user.getName() + " is already registered.");
         }
 
         // Convert DTO to Entity
@@ -68,8 +68,8 @@ public class patientServiceIMPL implements PatientService {
         Patient patientToUpdate = existingPatient.get();
         updates.forEach((key, value) -> {
             switch (key) {
-                case "nic":
-                    patientToUpdate.setNic((String) value);
+                case "id":
+                    patientToUpdate.setId((String) value);
                     break;
                 case "name":
                     patientToUpdate.setName((String) value);
@@ -88,10 +88,10 @@ public class patientServiceIMPL implements PatientService {
                     break;
                 case "age":
                     // Assuming you want to parse a LocalDate from a string
-                    patientToUpdate.setAge((String) value);
+                    patientToUpdate.setAge((Integer) value);
                     break;
-                case "nameOfNotifier":
-                    patientToUpdate.setNameOfNotifier((String) value);
+                case "guardianName":
+                    patientToUpdate.setGuardianName((String) value);
                     break;
                 case "occupation":
                     patientToUpdate.setOccupation((String) value);

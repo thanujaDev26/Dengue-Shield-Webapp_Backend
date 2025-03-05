@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 @EnableJpaRepositories
 public interface CommunicableDiseaseNotificationRepo extends JpaRepository<CommunicableDiseaseNotification,Long> {
-    CommunicableDiseaseNotification findByPatient_Nic(String id);
+    CommunicableDiseaseNotification findByPatient_Id(String id);
 }
