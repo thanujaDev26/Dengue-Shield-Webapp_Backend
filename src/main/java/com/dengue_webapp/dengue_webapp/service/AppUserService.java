@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface AppUserService {
-    AppUser registerUser(RequestUserDto user);
+    AppUser registerUser(RequestAppUserDto user);
 
     List<AppUser> getAllAppUsers();
 
