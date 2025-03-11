@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface PatientService {
-    Patient registerAppUser(RequestPatientDto user);
+    Patient registerPatient(RequestPatientDto user);
 
     List<Patient> getAllpatients();
 
@@ -16,4 +16,6 @@ public interface PatientService {
     Patient updatePatient(String id, Map<String, Object> updates);
 
     Patient deletePatient(String id);
+
+
 }

@@ -25,9 +25,9 @@ public class patientController {
     private PatientService  patientService;
     //crud
     @PostMapping("/save-patient")
-    public ResponseEntity<StandardResponse> registerAppUser(@RequestBody RequestPatientDto user) {
+    public ResponseEntity<StandardResponse> registerPatient(@RequestBody RequestPatientDto user) {
 
-        Patient savedPateint =  patientService.registerAppUser(user);
+        Patient savedPateint =  patientService.registerPatient(user);
         StandardResponse response = new StandardResponse(201, " pateint added successfully", savedPateint);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
 

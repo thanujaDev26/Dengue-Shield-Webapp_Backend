@@ -20,9 +20,10 @@ public class MOHOfficer {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     private AppUser appuser;
+
 
     @Column(name = "mobilenumber", length = 255)
     private String mobilenumber;
@@ -40,13 +41,15 @@ public class MOHOfficer {
         this.branch = branch;
     }
 
-    // ✅ One MOH Officer manages multiple PHI officers
+    //  One MOH Officer manages multiple PHI officers
     @OneToMany(mappedBy = "mohOfficer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PHIOfficer> phiOfficers = new ArrayList<>();
 
-    // ✅ One MOH Officer can create multiple notifications
-    @OneToMany(mappedBy = "mohOfficer", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CommunicableDiseaseNotification> notifications = new ArrayList<>();
+    // One MOH Officer can create multiple notifications
+//    @OneToMany(mappedBy = "mohOfficer", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<CommunicableDiseaseNotification> notifications = new ArrayList<>();
+
+
 
 
 }

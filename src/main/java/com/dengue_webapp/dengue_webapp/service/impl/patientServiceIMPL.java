@@ -27,14 +27,12 @@ public class patientServiceIMPL implements PatientService {
     @Autowired
     private ModelMapper modelMapper;
     @Override
-    public Patient registerAppUser(RequestPatientDto user) {
+    public Patient registerPatient(RequestPatientDto user) {
         if (patientRepo.existsById(user.getId())) {
             throw new UserAlreadyExistsException("Patient " + user.getName() + " is already registered.");
         }
-
         // Convert DTO to Entity
         Patient newPatient = modelMapper.map(user,Patient.class);
-
         // Save to database
         return patientRepo.save(newPatient);
     }

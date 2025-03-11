@@ -22,7 +22,8 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) // Disable CSRF
                 .cors(cors -> cors.disable()) // Enable CORS with default config
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll()
+                        .requestMatchers("/swagger-ui/**", "http://localhost:8080/swagger-ui/index.html#/**").permitAll() // Allow Swagger endpoints
+                        .anyRequest().permitAll() // Allow all requests
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .formLogin(form -> form.disable()) // Disable default form login
@@ -38,7 +39,7 @@ public class SecurityConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:5173")
+                        .allowedOrigins("http://localhost:5173","http://localhost:8080/swagger-ui/index.html#/")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS","PATCH")
                         .allowCredentials(true);
             }
