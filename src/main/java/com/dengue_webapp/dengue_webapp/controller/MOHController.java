@@ -62,8 +62,8 @@ public class MOHController {
 
     @PostMapping("/saveDiseaseNotification")
     public ResponseEntity<StandardResponse> saveDiseaseNotification(@RequestBody RequestDiseaseNotificationDto notification) {
-
-        ResponseDiseaseNotificationDto responseNotification = mohService.saveDiseaseNotification(notification);
+        System.out.println("in controller");
+        CommunicableDiseaseNotification responseNotification = mohService.saveDiseaseNotification(notification);
         StandardResponse response = new StandardResponse(201, " notification  added successfully", responseNotification);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
@@ -71,6 +71,7 @@ public class MOHController {
 
     @GetMapping("/getAllDiseaseNotification")
     public ResponseEntity<StandardResponse> getAllDiseaseNotification() {
+
         List<ResponseDiseaseNotificationDto> notifyList =  mohService.getAllNotifications();
         StandardResponse response = new StandardResponse(200, "get all  Notificattions successfully", notifyList);
         return ResponseEntity.ok(response);

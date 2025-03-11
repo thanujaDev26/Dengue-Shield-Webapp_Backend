@@ -39,6 +39,17 @@ public class PHIOfficer {
     @Column(name = "branch", length = 255)
     private String branch;
 
+
+    public PHIOfficer (AppUser appUser,String mobilenumber,String district,String branch,String area){
+        this.appuser = appUser;
+        this.mobilenumber = mobilenumber;
+        this.district = district;
+        this.branch = branch;
+        this.area = area;
+    }
+
+
+
     @ManyToOne
   @JoinColumn(name = "moh_officer_id")
   private MOHOfficer mohOfficer;

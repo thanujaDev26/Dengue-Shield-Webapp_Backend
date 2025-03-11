@@ -18,12 +18,6 @@ public class CommunicableDiseaseNotification {
     @Column(name = "id", length = 45)
     private Long id;
 
-    @Column(name = "guardian_name", nullable = false, length = 100) // Added length
-    private String guardianName;
-
-    @Column(nullable = false, length = 100)
-    private String name;
-
     @Column(name = "lab_results", length = 100)
     private String labResults;  // Fixed variable name
 
@@ -42,16 +36,45 @@ public class CommunicableDiseaseNotification {
     @Column(name = "bed_number", nullable = false, length = 50)
     private String bedNumber;
 
-    @Column(name = "medical_officer", nullable = false, length = 100)
-    private String medicalOfficer;  // Fixed variable name
+
+    @Column(nullable = false)
+    private String nameOfNotifier; // Fixed casing
+
+    @Column(nullable = false)
+    private String notifierStatus; // Fixed casing
+
+    @Column(nullable = false)
+    private String diseaseName;
 
     @ManyToOne
     @JoinColumn(name = "moh_id", nullable = false)
     private MOHOfficer mohOfficer;
 
-
     @OneToOne
     @JoinColumn(name = "patient_id", nullable = false) // Foreign key reference
     private Patient patient;
 
+    public CommunicableDiseaseNotification(String labResults, LocalDate dateOfOnset, LocalDate dateOfAdmission,
+                                           String institute, String ward, String bedNumber,
+                                           String nameOfNotifier, String notifierStatus,
+                                           String diseaseName, MOHOfficer mohOfficer,
+                                           Patient patient) {
+        this.labResults = labResults;
+        this.dateOfOnset = dateOfOnset;
+        this.dateOfAdmission = dateOfAdmission;
+        this.institute = institute;
+        this.ward = ward;
+        this.bedNumber = bedNumber;
+        this.nameOfNotifier = nameOfNotifier;
+        this.notifierStatus = notifierStatus;
+        this.diseaseName = diseaseName;
+        this.mohOfficer = mohOfficer;
+        this.patient = patient;
+    }
+
+
+
+
 }
+
+/* */

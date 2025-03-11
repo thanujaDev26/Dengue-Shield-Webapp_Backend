@@ -17,7 +17,7 @@ public interface MOHService {
 
     ResponseDiseaseNotificationDto getDiseaseNotificationByPateintId(String id);
 
-    ResponseDiseaseNotificationDto saveDiseaseNotification(RequestDiseaseNotificationDto notification);
+    CommunicableDiseaseNotification saveDiseaseNotification(RequestDiseaseNotificationDto notification);
 
     List<ResponseDiseaseNotificationDto> getAllNotifications();
 

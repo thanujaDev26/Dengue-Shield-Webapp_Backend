@@ -17,21 +17,22 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@CrossOrigin("http://localhost:5173")
 @RequestMapping("/api/v1/patient")
 public class patientController {
 
     @Autowired
     private PatientService  patientService;
     //crud
-    @PostMapping("/register")
-    public ResponseEntity<StandardResponse> registerAppUser(@RequestBody RequestPatientDto user) {
+    @PostMapping("/save-patient")
+    public ResponseEntity<StandardResponse> registerPatient(@RequestBody RequestPatientDto user) {
 
-        Patient savedUser =  patientService.registerAppUser(user);
-        StandardResponse response = new StandardResponse(201, " user added successfully", savedUser);
+        Patient savedPateint =  patientService.registerPatient(user);
+        StandardResponse response = new StandardResponse(201, " pateint added successfully", savedPateint);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
     }
-    @GetMapping("/getAllAppUsers")
+    @GetMapping("/getPatients")
     public ResponseEntity<StandardResponse> getAllpatients() {
 
         List<Patient> patientList =  patientService.getAllpatients();
@@ -47,6 +48,8 @@ public class patientController {
         return ResponseEntity.status(HttpStatus.OK).body(response);  // Use HttpStatus.OK (200)
     }
 
+
+
     @DeleteMapping("/deleteAppUser/{id}")
     public ResponseEntity<StandardResponse> deletePatient(@PathVariable String id) {
         Patient DeletedUser = patientService.deletePatient(id);
@@ -54,7 +57,7 @@ public class patientController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @PatchMapping("/updateAppUser/{id}")
+    @PatchMapping("/updatePatient/{id}")
     public ResponseEntity<StandardResponse> updatePatient(@PathVariable(value = "id")  String id, @RequestBody Map<String ,Object> Updates) {
 
         Patient UpdatedPatient = patientService.updatePatient(id, Updates);

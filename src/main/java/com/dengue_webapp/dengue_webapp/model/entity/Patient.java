@@ -15,16 +15,13 @@ import java.time.LocalDate;
 public class Patient {
 
     @Id
-    private String nic; // Kept as String assuming NIC is manually entered
+    private String id; // Kept as String assuming NIC is manually entered
 
     @Column(nullable = false)
     private String name;
 
     @Column(nullable = false) // Removed unique = true from address
     private String address;
-
-    @Column(nullable = false)
-    private String notifierStatus; // Fixed casing
 
     @Column(nullable = true)
     private String religion;
@@ -41,9 +38,9 @@ public class Patient {
     @Column(nullable = true)
     private String gender;
 
-    @Column(nullable = false)
-    private String nameOfNotifier; // Fixed casing
+    @Column(name = "guardian_name", nullable = false, length = 100) // Added length
+    private String guardianName;
 
     @Column(nullable = false)
-    private String Age; // Changed to LocalDate
+    private Integer age; // Changed to LocalDate
 }

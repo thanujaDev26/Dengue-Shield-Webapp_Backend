@@ -18,4 +18,6 @@ public interface AppUserRepo extends JpaRepository<AppUser,Long> {
     List<AppUser> findAllByRole(Role roleName);
 
     Optional<AppUser> findById(Long id);
+
+    AppUser findByEmail(String email);
 }

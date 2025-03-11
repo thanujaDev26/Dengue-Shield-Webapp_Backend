@@ -115,7 +115,7 @@ public class PHIServiceImpl implements PHIService {
     @Override
     public PHIOfficer updatePhiOfficer(Long id, Map<String, Object> updates) {
         PHIOfficer userToUpdate = phiRepo.findById(id)
-                .orElseThrow(() -> new NoDataFoundException("MOH Officer not found. Please register the user."));
+                .orElseThrow(() -> new NoDataFoundException("phi Officer not found. Please register the user."));
         updates.forEach((key, value) -> {
             switch (key.toLowerCase()) {
                 case "mobilenumber":
