@@ -21,10 +21,12 @@ public interface MOHService {
 
     List<ResponseDiseaseNotificationDto> getAllNotifications();
 
-    ResponseDiseaseNotificationDto updateDiseaseNotificationByNic(String id, Map<String, Object> updates);
+    ResponseDiseaseNotificationDto updateDiseaseNotificationById(long id, Map<String, Object> updates);
 
     ResponseDiseaseNotificationDto deleteDiseaseNotificationById(String id);
 
 
     Message sendDiseaseNotification(RequestMessageDto message);
+
+    List<Message> getAllMessagesById(long id);
 }

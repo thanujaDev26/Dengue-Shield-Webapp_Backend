@@ -17,8 +17,8 @@ import java.util.Date;
 public class RequestMessageDto {
 
     private long mohOfficerId; // MOH who sent the message
-    private String phiOfficerEmail; // PHI who received the message
-    private long inwardDocumentId; // Linked inward document
+    private long phiOfficerId; // PHI who received the message
+    private long h544Id; // Linked inward document
 
 
 }

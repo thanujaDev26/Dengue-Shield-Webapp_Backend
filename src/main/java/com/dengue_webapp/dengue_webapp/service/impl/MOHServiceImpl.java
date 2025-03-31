@@ -63,10 +63,7 @@ public class MOHServiceImpl implements MOHService {
         if (phiOfficers.isEmpty()) {
             throw new NoDataFoundException("No PHI Officers found in the given district and branch. Please register PHI Officers or add district and branch");
         }
-        List<PHIOfficer> list = mohOfficer.getPhiOfficers();
-        phiOfficers.forEach((phi) -> list.add(phi));
-        mohOfficer.setPhiOfficers(list);
-        mohRepo.save(mohOfficer);
+        phiOfficers.forEach((phi) -> phi.setMohOfficer(mohOfficer));
         return phiOfficers;
     }
 
@@ -100,7 +97,8 @@ public class MOHServiceImpl implements MOHService {
     public List<PHIOfficer> getAppUserById(Long id) {
         MOHOfficer mohOfficer = mohRepo.findById(id)
                 .orElseThrow(() -> new NoDataFoundException("MOH Officer not found. Please register the user."));
-        return mohOfficer.getPhiOfficers();
+        List<PHIOfficer> phiOfficers = phiRepo.findAllByMohOfficer(mohOfficer);
+        return phiOfficers;
     }
 
     @Override
@@ -155,19 +153,14 @@ public class MOHServiceImpl implements MOHService {
                 notification.getDiseaseName(),
                 mohOfficer,patient);
 
-
-        //newNotify.setPatient(patient); // Setting the patient
-
-        // Add the notification to the MOH Officer
         System.out.println(newNotify);
 
 
         System.out.println("Notification created for patient " + patient.getName() + " by MOH Officer " + mohOfficer.getAppuser().getName());
 
-// Add the notification to the MOH Officer's list
-//        mohOfficer.getNotifications().add(newNotify);
+
         System.out.println(newNotify);
-// Save the notification to the repository
+
         communicableDiseaseNotificationRepo.save(newNotify);
 
         return newNotify;
@@ -189,60 +182,91 @@ public class MOHServiceImpl implements MOHService {
     }
 
     @Override
-    public ResponseDiseaseNotificationDto updateDiseaseNotificationByNic(String nic, Map<String, Object> updates) {
-        // Fetch the disease notification by patient NIC
-        CommunicableDiseaseNotification existingNotification = communicableDiseaseNotificationRepo.findByPatient_Id(nic);
-        if (existingNotification == null) {
-            throw new NoDataFoundException("Disease notification not found for patient with NIC: " + nic);
+    public ResponseDiseaseNotificationDto updateDiseaseNotificationById(long id, Map<String, Object> updates) {
+        System.out.println("check 1");
+
+        Optional<CommunicableDiseaseNotification> existingNotification = communicableDiseaseNotificationRepo.findById(id);
+        if (existingNotification.isEmpty()) {
+            throw new NoDataFoundException("Disease notification not found for this id " + id);
         }
 
-        // Get the notification object to update
-        CommunicableDiseaseNotification notificationToUpdate = existingNotification;
+        System.out.println("check 2");
+        System.out.println(existingNotification.get());
+        System.out.println(updates);
 
+        CommunicableDiseaseNotification notification = existingNotification.get();
+        System.out.println("check 2.5");
         // Update fields in the notification
         updates.forEach((key, value) -> {
+            if (value == null) return; // Skip null values
+
             switch (key) {
                 case "nameOfNotifier":
-                    notificationToUpdate.setNameOfNotifier((String) value);
+                    notification.setNameOfNotifier((String) value);
+                    System.out.println("notifier name printed"+notification.getNameOfNotifier());
                     break;
                 case "labResults":
-                    notificationToUpdate.setLabResults((String) value);
+                    notification.setLabResults((String) value);
+                    System.out.println("lab results printed" +notification.getLabResults());
                     break;
                 case "dateOfOnset":
-                    notificationToUpdate.setDateOfOnset(LocalDate.parse((String) value));
+                    try {
+                        notification.setDateOfOnset(LocalDate.parse((String) value));
+                        System.out.println("date onset is printed"+notification.getDateOfOnset());
+                    } catch (Exception e) {
+                        throw new InvalidArgumentExeception("Invalid date format for dateOfOnset");
+                    }
                     break;
                 case "dateOfAdmission":
-                    notificationToUpdate.setDateOfAdmission(LocalDate.parse((String) value));
+                    try {
+                        notification.setDateOfAdmission(LocalDate.parse((String) value));
+                        System.out.println("date of admission is printed"+notification.getDateOfAdmission());
+                    } catch (Exception e) {
+                        throw new InvalidArgumentExeception("Invalid date format for dateOfAdmission");
+                    }
                     break;
                 case "institute":
-                    notificationToUpdate.setInstitute((String) value);
+                    notification.setInstitute((String) value);
+                    System.out.println("institute is printed"+notification.getInstitute());
                     break;
                 case "ward":
-                    notificationToUpdate.setWard((String) value);
+                    notification.setWard((String) value);
+                    System.out.println("ward is printed"+notification.getWard());
                     break;
                 case "bedNumber":
-                    notificationToUpdate.setBedNumber((String) value);
+                    notification.setBedNumber((String) value);
+                    System.out.println("bedNumber is printed"+notification.getBedNumber());
                     break;
                 case "notifierStatus":
-                    notificationToUpdate.setNotifierStatus((String) value);
+                    notification.setNotifierStatus((String) value);
+                    System.out.println("Notifier Status is printed"+notification.getNotifierStatus());
+                    break;
+                case "diseaseName":
+                    notification.setDiseaseName((String) value);
+                    System.out.println("diseaseName is printed"+notification.getDiseaseName());
                     break;
                 default:
                     throw new InvalidArgumentExeception("Invalid field name: " + key);
             }
         });
 
+        System.out.println("check 3");
+
         // Save the updated notification
-        CommunicableDiseaseNotification updatedNotification = communicableDiseaseNotificationRepo.save(notificationToUpdate);
+        CommunicableDiseaseNotification updatedNotification = communicableDiseaseNotificationRepo.save(notification);
+        System.out.println("check 4");
 
-        // Map the updated notification to the DTO (ResponseDiseaseNotificationDto)
+        // Map the updated notification to the DTO
         ResponseDiseaseNotificationDto responseDto = modelMapper.map(updatedNotification, ResponseDiseaseNotificationDto.class);
+        System.out.println("check 5");
 
-        // Optionally, update patient data if required (you can fetch and update patient info as needed)
+        // Optionally, update patient data if required
         ResponsePatientDto patientDto = modelMapper.map(updatedNotification.getPatient(), ResponsePatientDto.class);
         responseDto.setPatient(patientDto);
 
         return responseDto;
     }
+
 
     @Override
     public ResponseDiseaseNotificationDto deleteDiseaseNotificationById(String id) {
@@ -261,45 +285,46 @@ public class MOHServiceImpl implements MOHService {
 
     @Override
     public Message sendDiseaseNotification(RequestMessageDto message) {
-        return null;
+        // Find the MOHOfficer by ID
+        Optional<MOHOfficer> mohOfficerOpt = mohRepo.findById(message.getMohOfficerId());
+        if (mohOfficerOpt.isEmpty()) {
+            throw new NoDataFoundException("MOH Officer not found.");
+        }
+
+        Optional<PHIOfficer> phiOfficerOpt = phiRepo.findById(message.getPhiOfficerId());
+        if (phiOfficerOpt.isEmpty()) {
+            throw new NoDataFoundException("Phi Officer not found.");
+        }
+
+        Optional<CommunicableDiseaseNotification> h544Opt = communicableDiseaseNotificationRepo.findById(message.getH544Id());
+        if (h544Opt.isEmpty()) {
+            throw new NoDataFoundException("h544 not found.");
+        }
+        // Create a new message
+        Message newMessage = Message.builder()
+                .mohOfficer(mohOfficerOpt.get()) // Set MOH Officer
+                .phiOfficer(phiOfficerOpt.get()) // Set PHI Officer
+                .h544(h544Opt.get()) // Set linked Inward Document
+                .status(MessageStatus.PENDING) // Default status
+                .createdAt(Date.from(Instant.now())) // Current timestamp
+                .updatedAt(Date.from(Instant.now())) // Current timestamp
+                .build();
+//
+        return messageRepo.save(newMessage);
     }
 
-//    @Override
-//    public Message sendDiseaseNotification(RequestMessageDto messageDto) {
-//        // Find the MOHOfficer by ID
-//        Optional<MOHOfficer> mohOfficerOpt = mohRepo.findById(messageDto.getMohOfficerId());
-//        if (mohOfficerOpt.isEmpty()) {
-//            throw new NoDataFoundException("MOH Officer not found.");
-//        }
-//
-//        // Find the PHIOfficer by email
-//        PHIOfficer phiOfficerOpt = phiRepo.findByAppuser_Email(messageDto.getPhiOfficerEmail());
-//        if (phiOfficerOpt == null) {
-//            throw new NoDataFoundException("PHI Officer not found.");
-//        }
-//
-//        // Get MOH Officer's notifications list
-//        List<CommunicableDiseaseNotification> notifications = mohOfficerOpt.get().getNotifications();
-//        if (notifications == null || notifications.isEmpty()) {
-//            throw new NoDataFoundException("No disease notifications found for this MOH Officer.");
-//        }
-//
-//        // Get the last notification
-//        CommunicableDiseaseNotification h544 = notifications.get(notifications.size() - 1);
-//
-//        // Create a new message
-//        Message message = Message.builder()
-//                .mohOfficer(mohOfficerOpt.get()) // Set MOH Officer
-//                .phiOfficer(phiOfficerOpt) // Set PHI Officer
-//                .h544(h544) // Set linked Inward Document
-//                .status(MessageStatus.PENDING) // Default status
-//                .createdAt(Date.from(Instant.now())) // Current timestamp
-//                .updatedAt(Date.from(Instant.now())) // Current timestamp
-//                .build();
-//
-//        // Save the message entity to the database
-//        return messageRepo.save(message);
-//    }
+    @Override
+    public List<Message> getAllMessagesById(long id) {
+        Optional<MOHOfficer> mohOfficerOpt = mohRepo.findById(id);
+        if (mohOfficerOpt.isEmpty()) {
+            throw new NoDataFoundException("MOH Officer is not found.");
+        }
+        List<Message> messageList = messageRepo.findAllByMohOfficer(mohOfficerOpt.get());
+        if(messageList.isEmpty()){
+            throw new NoDataFoundException("No messages are found");
+        }
+        return messageList;
+    }
 
 
 }
