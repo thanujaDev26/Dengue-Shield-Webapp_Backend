@@ -1,10 +1,12 @@
 package com.dengue_webapp.dengue_webapp.service;
 
 import com.dengue_webapp.dengue_webapp.dto.request.RequestInwardDocumentDto;
+import com.dengue_webapp.dengue_webapp.dto.request.RequestNotebookDto;
 import com.dengue_webapp.dengue_webapp.dto.request.RequestPHIDto;
 import com.dengue_webapp.dengue_webapp.dto.response.ResponsePHIDto;
 import com.dengue_webapp.dengue_webapp.model.entity.InwardDocument;
 import com.dengue_webapp.dengue_webapp.model.entity.Message;
+import com.dengue_webapp.dengue_webapp.model.entity.NoteBook;
 import com.dengue_webapp.dengue_webapp.model.entity.PHIOfficer;
 
 import java.util.List;
@@ -35,4 +37,10 @@ public interface PHIService {
 
 
  Message updateMessageStatus(Long id);
+
+ List<Message> getAllSentMessages(Long phiId);
+
+    Message getMessageById(Long messageId);
+
+    NoteBook saveNotebook(Long phiId, RequestNotebookDto note);
 }

@@ -50,8 +50,8 @@ public class CommunicableDiseaseNotification {
     @JoinColumn(name = "moh_id", nullable = false)
     private MOHOfficer mohOfficer;
 
-    @OneToOne
-    @JoinColumn(name = "patient_id", nullable = false) // Foreign key reference
+    @ManyToOne
+    @JoinColumn(name = "patient_id", nullable = false,unique = false) // Foreign key reference
     private Patient patient;
 
     public CommunicableDiseaseNotification(String labResults, LocalDate dateOfOnset, LocalDate dateOfAdmission,

@@ -54,8 +54,7 @@ public class PHIOfficer {
   @JoinColumn(name = "moh_officer_id")
   private MOHOfficer mohOfficer;
 
-    @OneToMany(mappedBy = "phi", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<InwardDocument> inwardDocuments = new ArrayList<>();
+
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDate createdAt;
