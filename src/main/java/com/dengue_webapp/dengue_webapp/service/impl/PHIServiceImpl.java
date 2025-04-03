@@ -1,20 +1,15 @@
 package com.dengue_webapp.dengue_webapp.service.impl;
 
 import com.dengue_webapp.dengue_webapp.dto.request.RequestInwardDocumentDto;
+import com.dengue_webapp.dengue_webapp.dto.request.RequestNotebookDto;
 import com.dengue_webapp.dengue_webapp.dto.request.RequestPHIDto;
 import com.dengue_webapp.dengue_webapp.dto.response.ResponsePHIDto;
 import com.dengue_webapp.dengue_webapp.exceptions.DataAlreadyExistsException;
 import com.dengue_webapp.dengue_webapp.exceptions.InvalidArgumentExeception;
 import com.dengue_webapp.dengue_webapp.exceptions.NoDataFoundException;
-import com.dengue_webapp.dengue_webapp.model.entity.InwardDocument;
-import com.dengue_webapp.dengue_webapp.model.entity.MOHOfficer;
-import com.dengue_webapp.dengue_webapp.model.entity.Message;
-import com.dengue_webapp.dengue_webapp.model.entity.PHIOfficer;
+import com.dengue_webapp.dengue_webapp.model.entity.*;
 import com.dengue_webapp.dengue_webapp.model.enums.MessageStatus;
-import com.dengue_webapp.dengue_webapp.repository.InwardDocumentRepo;
-import com.dengue_webapp.dengue_webapp.repository.MOHRepo;
-import com.dengue_webapp.dengue_webapp.repository.MessageRepo;
-import com.dengue_webapp.dengue_webapp.repository.PHIRepo;
+import com.dengue_webapp.dengue_webapp.repository.*;
 import com.dengue_webapp.dengue_webapp.service.PHIService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,10 +30,19 @@ public class PHIServiceImpl implements PHIService {
     private  PHIRepo phiRepo;
 
     @Autowired
+    private PatientRepo patientRepo;
+
+    @Autowired
     private MOHRepo mohRepo;
 
      @Autowired
      private MessageRepo messageRepo;
+
+     @Autowired
+     private CommunicableDiseaseNotificationRepo communicableDiseaseNotificationRepo;
+
+     @Autowired
+     private  NoteBookRepo noteBookRepo;
 
     @Autowired
     private InwardDocumentRepo inwardDocumentRepo;
@@ -115,7 +119,7 @@ public class PHIServiceImpl implements PHIService {
     @Override
     public PHIOfficer updatePhiOfficer(Long id, Map<String, Object> updates) {
         PHIOfficer userToUpdate = phiRepo.findById(id)
-                .orElseThrow(() -> new NoDataFoundException("MOH Officer not found. Please register the user."));
+                .orElseThrow(() -> new NoDataFoundException("phi Officer not found. Please register the user."));
         updates.forEach((key, value) -> {
             switch (key.toLowerCase()) {
                 case "mobilenumber":
@@ -150,7 +154,7 @@ public class PHIServiceImpl implements PHIService {
         InwardDocument newDocument = modelMapper.map(document, InwardDocument.class);
         newDocument.setPhi(phi); // Link inward document to PHI officer
 
-        phi.getInwardDocuments().add(newDocument); // Safe to add without null checks
+//        phi.getInwardDocuments().add(newDocument); // Safe to add without null checks
         phiRepo.save(phi); // Cascade saves the newDocument too
 
         return newDocument;
@@ -180,10 +184,13 @@ public class PHIServiceImpl implements PHIService {
 
     @Override
     public List<Message> getAllPendingMessages(Long phiId) {
-        List<Message> pendingMessageList = messageRepo.findAllByPhiOfficer_Id(phiId);
-        if(pendingMessageList.isEmpty()){
-            throw  new NoDataFoundException("there is no  message for you..");
-        }
+        //System.out.println("hello");
+        List<Message> pendingMessageList = messageRepo.findAllByPhiOfficer_IdAndStatusEquals(phiId,MessageStatus.PENDING);
+        System.out.println(pendingMessageList);
+//        if(pendingMessageList.isEmpty()){
+//            throw  new NoDataFoundException("there is no  message for you..");
+//        }
+
         return pendingMessageList;
 
     }
@@ -195,7 +202,73 @@ public class PHIServiceImpl implements PHIService {
             throw new NoDataFoundException("No message can't be found");
         }
         oldMessage.get().setStatus(MessageStatus.SENT);
+
         return messageRepo.save(oldMessage.get());
+    }
+
+    @Override
+    public List<Message> getAllSentMessages(Long phiId) {
+        List<Message> sentMessageList = messageRepo.findAllByPhiOfficer_IdAndStatusEquals(phiId,MessageStatus.SENT);
+       // System.out.println(pendingMessageList);
+        if(sentMessageList.isEmpty()){
+            throw  new NoDataFoundException("there is no  message for you..");
+        }
+
+        return sentMessageList;
+    }
+
+    @Override
+    public Message getMessageById(Long messageId) {
+        Optional<Message> oldMessage = messageRepo.findById(messageId);
+        if(oldMessage.isEmpty()){
+            throw new NoDataFoundException("No message can't be found");
+        }
+
+        return oldMessage.get();
+    }
+
+    @Override
+    public NoteBook saveNotebook(Long phiId, RequestNotebookDto note) {
+        //System.out.println("checkpoint 1");
+        Optional<PHIOfficer> phiOfficer = phiRepo.findById(phiId);
+        //System.out.println(phiOfficer.get());
+        if (phiOfficer.isEmpty()){
+            throw new NoDataFoundException("phi officer is not found,please register...");
+        }
+       // System.out.println("checkpoint 2");
+        Optional<Patient> existingPatient = patientRepo.findById(note.getPatient().getId());
+        //System.out.println(existingPatient.get());
+        if (existingPatient.isEmpty()) {
+            throw new NoDataFoundException("Patient not found");
+        }
+        Patient patientToUpdate = existingPatient.get();
+        patientToUpdate.setOccupation(note.getPatient().getOccupation());
+        patientToUpdate.setReligion(note.getPatient().getReligion());
+        patientToUpdate.setRace(note.getPatient().getRace());
+        patientRepo.save(patientToUpdate);
+
+        //System.out.println(patientToUpdate);
+
+        Optional<CommunicableDiseaseNotification> h544 = communicableDiseaseNotificationRepo.findById(note.getH544Id());
+        if (h544.isEmpty()){
+            throw new NoDataFoundException("h544 is not found");
+        }
+
+      //  System.out.println(h544);
+
+        NoteBook newNote  = modelMapper.map(note, NoteBook.class);
+        //System.out.println( newNote);
+        newNote.setH544(h544.get());
+       // System.out.println( newNote);
+        newNote.setPhiOfficer(phiOfficer.get());
+        //System.out.println( newNote);
+        try{ noteBookRepo.save( newNote);}
+        catch(Exception e){
+            System.out.println(e.getMessage());
+        }
+
+        //System.out.println( newNote);
+        return  newNote;
     }
 
 

@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ResponsePatientDto {
-    private String nic; // Kept as String assuming NIC is manually entered
+    private String id; // Kept as String assuming NIC is manually entered
     private String name;
     private String address;
     private String notifierStatus; // Fixed casing
@@ -21,5 +21,5 @@ public class ResponsePatientDto {
     private String occupation;
     private String gender;
     private String nameOfNotifier; // Fixed casing
-    private LocalDate dateOfBirth;
+    private String Age;
 }

@@ -2,12 +2,10 @@ package com.dengue_webapp.dengue_webapp.controller;
 
 
 import com.dengue_webapp.dengue_webapp.dto.request.RequestInwardDocumentDto;
+import com.dengue_webapp.dengue_webapp.dto.request.RequestNotebookDto;
 import com.dengue_webapp.dengue_webapp.dto.request.RequestPHIDto;
 import com.dengue_webapp.dengue_webapp.dto.response.ResponsePHIDto;
-import com.dengue_webapp.dengue_webapp.model.entity.InwardDocument;
-import com.dengue_webapp.dengue_webapp.model.entity.MOHOfficer;
-import com.dengue_webapp.dengue_webapp.model.entity.Message;
-import com.dengue_webapp.dengue_webapp.model.entity.PHIOfficer;
+import com.dengue_webapp.dengue_webapp.model.entity.*;
 import com.dengue_webapp.dengue_webapp.service.PHIService;
 import com.dengue_webapp.dengue_webapp.util.StandardResponse;
 import org.modelmapper.ModelMapper;
@@ -71,22 +69,42 @@ public class PHIController {
     public ResponseEntity<StandardResponse> getAllPendingMessages(@PathVariable Long phiId) {
 
         List<Message> pendingMessageList = phiService.getAllPendingMessages(phiId);
-        StandardResponse response = new StandardResponse(200, "Fetched all  users",pendingMessageList);
+        StandardResponse response = new StandardResponse(200, "Fetched all the messages",pendingMessageList);
         return ResponseEntity.ok(response);
     }
       //change the status of mesaage to sent.
+      @GetMapping("/getAllSentMessages/{phiId}")
+      public ResponseEntity<StandardResponse> getAllSentMessages(@PathVariable Long phiId) {
 
-     @PatchMapping("/{id}/status")
+          List<Message> pendingMessageList = phiService.getAllSentMessages(phiId);
+          StandardResponse response = new StandardResponse(200, "Fetched all the messages",pendingMessageList);
+          return ResponseEntity.ok(response);
+      }
+     @PatchMapping("/updateMessageStatus/{id}")
      public ResponseEntity<StandardResponse> updateMessageStatus(@PathVariable Long id) {
          //System.out.println("hello world");
          Message updatedMessage = phiService.updateMessageStatus(id);
-         StandardResponse response = new StandardResponse(200, "user updated successfully",updatedMessage);
+         StandardResponse response = new StandardResponse(200, "message updated successfully",updatedMessage);
          return ResponseEntity.status(HttpStatus.OK).body(response);
 
      }
 
+    @GetMapping("/getMessage/{messageId}")
+    public ResponseEntity<StandardResponse> getMessageById(@PathVariable Long messageId) {
 
+        Message message = phiService.getMessageById(messageId);
+        StandardResponse response = new StandardResponse(200, "Fetched the message Sucessfully",message);
+        return ResponseEntity.ok(response);
+    }
 
+    @PostMapping("/saveNotebook/{phiId}")
+    public ResponseEntity<StandardResponse> saveNotebook(@PathVariable Long phiId, @RequestBody RequestNotebookDto note) {
+        System.out.println("hello in controller");
+        NoteBook newNote = phiService.saveNotebook( phiId,note);
+        StandardResponse response = new StandardResponse(201, "Note saved succesfully", newNote);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+
+    }
 
 
 

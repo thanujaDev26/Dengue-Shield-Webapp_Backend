@@ -17,14 +17,16 @@ public interface MOHService {
 
     ResponseDiseaseNotificationDto getDiseaseNotificationByPateintId(String id);
 
-    ResponseDiseaseNotificationDto saveDiseaseNotification(RequestDiseaseNotificationDto notification);
+    CommunicableDiseaseNotification saveDiseaseNotification(RequestDiseaseNotificationDto notification);
 
     List<ResponseDiseaseNotificationDto> getAllNotifications();
 
-    ResponseDiseaseNotificationDto updateDiseaseNotificationByNic(String id, Map<String, Object> updates);
+    ResponseDiseaseNotificationDto updateDiseaseNotificationById(long id, Map<String, Object> updates);
 
     ResponseDiseaseNotificationDto deleteDiseaseNotificationById(String id);
 
 
     Message sendDiseaseNotification(RequestMessageDto message);
+
+    List<Message> getAllMessagesById(long id);
 }

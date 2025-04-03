@@ -31,7 +31,7 @@ public class MOHController {
     //we pass moh id to frontend when moh login.
     @PatchMapping("/updateMoh/{id}")
     public ResponseEntity<StandardResponse> updateMohOfficer(@PathVariable Long id, @RequestBody Map<String ,Object> Updates) {
-        System.out.println("hello world");
+       // System.out.println("hello world");
         MOHOfficer UpdatedUser = mohService.updateMohOfficer(id, Updates);
         StandardResponse response = new StandardResponse(200, "user updated successfully",UpdatedUser);
         return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -62,8 +62,8 @@ public class MOHController {
 
     @PostMapping("/saveDiseaseNotification")
     public ResponseEntity<StandardResponse> saveDiseaseNotification(@RequestBody RequestDiseaseNotificationDto notification) {
-
-        ResponseDiseaseNotificationDto responseNotification = mohService.saveDiseaseNotification(notification);
+        System.out.println("in controller");
+        CommunicableDiseaseNotification responseNotification = mohService.saveDiseaseNotification(notification);
         StandardResponse response = new StandardResponse(201, " notification  added successfully", responseNotification);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
@@ -71,15 +71,16 @@ public class MOHController {
 
     @GetMapping("/getAllDiseaseNotification")
     public ResponseEntity<StandardResponse> getAllDiseaseNotification() {
+
         List<ResponseDiseaseNotificationDto> notifyList =  mohService.getAllNotifications();
         StandardResponse response = new StandardResponse(200, "get all  Notificattions successfully", notifyList);
         return ResponseEntity.ok(response);
     }
 
     @PatchMapping("/updateDiseaseNotification/{id}")
-    public ResponseEntity<StandardResponse> updateDiseaseNotificationByNic(@PathVariable(value = "id") String id, @RequestBody Map<String ,Object> Updates) {
+    public ResponseEntity<StandardResponse> updateDiseaseNotificationByNic(@PathVariable(value = "id") long id, @RequestBody Map<String ,Object> Updates) {
 
-        ResponseDiseaseNotificationDto diseaseResponse = mohService.updateDiseaseNotificationByNic(id, Updates);
+        ResponseDiseaseNotificationDto diseaseResponse = mohService.updateDiseaseNotificationById(id, Updates);
         StandardResponse response = new StandardResponse(200, "user updated successfully", diseaseResponse);
         return ResponseEntity.status(HttpStatus.OK).body(response);
 
@@ -96,9 +97,17 @@ public class MOHController {
 
     public ResponseEntity<StandardResponse> sendDiseaseNotification(@RequestBody RequestMessageDto message) {
         Message savedMessage = mohService.sendDiseaseNotification(message);
-        StandardResponse response = new StandardResponse(200, " user deleted successfully",savedMessage);
+        StandardResponse response = new StandardResponse(200, "message sent succesfully",savedMessage);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+    @GetMapping("/getAllmessages/{id}")
+    public ResponseEntity<StandardResponse> getAllmessagesById(@PathVariable  long id) {
+
+        List<Message> messageList =  mohService.getAllMessagesById(id);
+        StandardResponse response = new StandardResponse(200, "get all  messages successfully", messageList );
+        return ResponseEntity.ok(response);
+    }
+
 
 }
 /*

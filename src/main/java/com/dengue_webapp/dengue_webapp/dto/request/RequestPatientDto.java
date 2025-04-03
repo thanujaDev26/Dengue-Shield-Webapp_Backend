@@ -9,15 +9,15 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RequestPatientDto {
-    private String nic; // Kept as String assuming NIC is manually entered
+    private String id; // Kept as String assuming NIC is manually entered
     private String name;
     private String address;
-    private String notifierStatus; // Fixed casing
     private String religion;
     private String race;
     private String telephoneNumber;
     private String occupation;
     private String gender;
-    private String nameOfNotifier; // Fixed casing
-    private LocalDate dateOfBirth;
+    private String guardianName;// Fixed casing
+    private  Integer Age;
 }
+

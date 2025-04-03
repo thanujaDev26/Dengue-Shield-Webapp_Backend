@@ -2,6 +2,8 @@ package com.dengue_webapp.dengue_webapp.controller;
 
 
 import com.dengue_webapp.dengue_webapp.dto.request.RequestAppUserDto;
+import com.dengue_webapp.dengue_webapp.dto.request.RequestLoginDto;
+import com.dengue_webapp.dengue_webapp.dto.request.RequestUserDto;
 import com.dengue_webapp.dengue_webapp.model.entity.AppUser;
 import com.dengue_webapp.dengue_webapp.service.AppUserService;
 import com.dengue_webapp.dengue_webapp.util.StandardResponse;
@@ -14,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@CrossOrigin
+@CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("/api/v1/appuser")
 public class AppUserController {
    @Autowired
@@ -22,12 +24,22 @@ public class AppUserController {
 
     @PostMapping("/register")
     public ResponseEntity<StandardResponse> registerAppUser(@RequestBody RequestAppUserDto user) {
-
-        AppUser savedUser = appUserService.registerAppUser(user);
+        AppUser savedUser = appUserService.registerUser(user);
         StandardResponse response = new StandardResponse(201, " user added successfully", savedUser);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
     }
+
+    @PostMapping("/login")
+    public ResponseEntity<StandardResponse> loginAppUser(@RequestBody RequestLoginDto user) {
+
+        Object loggedUser = appUserService.loginAppUser(user);
+        StandardResponse response = new StandardResponse(201, " user added successfully", loggedUser);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+
+    }
+
+
     @GetMapping("/getAllAppUsers")
     public ResponseEntity<StandardResponse> getAllAppUsers() {
         System.out.println("hello");
