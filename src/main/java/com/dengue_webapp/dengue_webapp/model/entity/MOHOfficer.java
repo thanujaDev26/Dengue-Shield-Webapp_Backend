@@ -42,8 +42,8 @@ public class MOHOfficer {
     }
 
     //  One MOH Officer manages multiple PHI officers
-    @OneToMany(mappedBy = "mohOfficer", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PHIOfficer> phiOfficers = new ArrayList<>();
+//    @OneToMany(mappedBy = "mohOfficer", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<PHIOfficer> phiOfficers = new ArrayList<>();
 
     // One MOH Officer can create multiple notifications
 //    @OneToMany(mappedBy = "mohOfficer", cascade = CascadeType.ALL, orphanRemoval = true)

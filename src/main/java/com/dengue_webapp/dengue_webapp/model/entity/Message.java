@@ -45,4 +45,13 @@ public class Message {
 
     @Column(name = "updatedAt")
     private Date updatedAt;
+
+    @PreUpdate
+    protected void onUpdate() {
+       this.updatedAt = new Date();
+    }
+    @PrePersist
+    protected void onCreate() {
+       this.createdAt = new Date(); // Set createdAt only on insert
+    }
 }

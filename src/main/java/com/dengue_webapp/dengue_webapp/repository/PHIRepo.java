@@ -1,6 +1,7 @@
 package com.dengue_webapp.dengue_webapp.repository;
 
 import com.dengue_webapp.dengue_webapp.model.entity.AppUser;
+import com.dengue_webapp.dengue_webapp.model.entity.MOHOfficer;
 import com.dengue_webapp.dengue_webapp.model.entity.PHIOfficer;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,4 +22,6 @@ public interface PHIRepo extends JpaRepository<PHIOfficer, Long> {
 
     List<PHIOfficer> findAllByDistrictAndAndBranch(String district, String branch);
     AppUser findByAppuser(AppUser registeredUser);
+
+    List<PHIOfficer> findAllByMohOfficer(MOHOfficer mohOfficer);
 }
