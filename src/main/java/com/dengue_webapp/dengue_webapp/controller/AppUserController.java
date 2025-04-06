@@ -48,25 +48,27 @@ public class AppUserController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/getAppUser/{id}")
-    public ResponseEntity<StandardResponse> getAppUserById(@PathVariable  Long id) {
-
-        AppUser savedUser = appUserService.getAppUserById(id);
+    @GetMapping("/getAppUser")
+    public ResponseEntity<StandardResponse> getAppUserById(@RequestParam Long id,
+                                                           @RequestParam String role) {
+        System.out.println("hello");
+        Object savedUser = appUserService.getAppUserByIdAndRole(id,role);
         StandardResponse response = new StandardResponse(200, " user fetched successfully", savedUser);
         return ResponseEntity.status(HttpStatus.OK).body(response);  // Use HttpStatus.OK (200)
     }
 
-    @DeleteMapping("/deleteAppUser/{id}")
-    public ResponseEntity<StandardResponse> deleteAppUser(@PathVariable Long id) {
-        AppUser DeletedUser = appUserService.deleteAppUser(id);
+    @DeleteMapping("/deleteAppUser")
+    public ResponseEntity<StandardResponse> deleteAppUser(@RequestParam Long id,
+                                                          @RequestParam String role) {
+        String DeletedUser = appUserService.deleteAppUser(id,role);
         StandardResponse response = new StandardResponse(200, " user deleted successfully",DeletedUser);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @PatchMapping("/updateAppUser/{id}")
-    public ResponseEntity<StandardResponse> updateAppUser(@PathVariable(value = "id")  Long id, @RequestBody Map<String ,Object> Updates) {
-        
-        AppUser UpdatedUser = appUserService.updateAppUser(id, Updates);
+    public ResponseEntity<StandardResponse> updateAppUser(@PathVariable(value = "id")  Long id, @RequestParam String role, @RequestBody Map<String ,Object> Updates) {
+
+        Object UpdatedUser = appUserService.updateAppUser(id,role, Updates);
         StandardResponse response = new StandardResponse(200, "user updated successfully",UpdatedUser);
         return ResponseEntity.status(HttpStatus.OK).body(response);
 

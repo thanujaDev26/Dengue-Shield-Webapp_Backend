@@ -2,7 +2,6 @@ package com.dengue_webapp.dengue_webapp.service.impl;
 
 import com.dengue_webapp.dengue_webapp.dto.request.RequestAppUserDto;
 import com.dengue_webapp.dengue_webapp.dto.request.RequestLoginDto;
-import com.dengue_webapp.dengue_webapp.dto.request.RequestUserDto;
 import com.dengue_webapp.dengue_webapp.exceptions.InvalidArgumentExeception;
 import com.dengue_webapp.dengue_webapp.exceptions.NoDataFoundException;
 import com.dengue_webapp.dengue_webapp.exceptions.UserAlreadyExistsException;
@@ -23,8 +22,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
-import static com.dengue_webapp.dengue_webapp.model.enums.Role.ROLE_ADMIN;
 
 @Service
 public class AppUserServiceImpl implements AppUserService {
@@ -92,60 +89,91 @@ public class AppUserServiceImpl implements AppUserService {
         return userList;
     }
 
+
+
+
     @Override
-    public AppUser getAppUserById(Long id) {
-        Optional<AppUser> existingUser = appUserRepo.findById(id);
-        System.out.println(existingUser.get());
-        if (existingUser.isEmpty()) {
-            throw new NoDataFoundException("user is not found. please register the user");
+    public String deleteAppUser(Long id,String role) {
+        Optional<AppUser> appUser ;
+        String message = "";
+        if ("ROLE_MOH".equals(role)) {
+
+            Optional<MOHOfficer>user = mohRepo.findById(id);
+            if (user.isEmpty()) {
+                throw new NoDataFoundException("No MOH officer found. Please register...");
+
+            }
+            appUser = appUserRepo.findById(user.get().getAppuser().getId());
+            if (appUser.isEmpty()) {
+                throw new NoDataFoundException("No Appuser found. Please register...");
+
+            }
+            mohRepo.delete(user.get());
+            appUserRepo.delete(appUser.get());
+
+            message = "successfully deleted MOH";
+        } else if ("ROLE_PHIO".equals(role)) {
+
+            Optional<PHIOfficer>user = phiRepo.findById(id);
+            if (user.isEmpty()) {
+                throw new NoDataFoundException("No PHI officer found. Please register...");
+
+            }
+            appUser = appUserRepo.findById(user.get().getAppuser().getId());
+            if (appUser.isEmpty()) {
+                throw new NoDataFoundException("No Appuser found. Please register...");
+
+            }
+            phiRepo.delete(user.get());
+            appUserRepo.delete(appUser.get());
+            message = "successfully deleted PHI";
         }
 
-        return existingUser.get();
 
+
+
+        return message;
     }
 
     @Override
-    public AppUser deleteAppUser(Long id) {
-        Optional<AppUser> existingUser = appUserRepo.findById(id);
-        if (existingUser.isEmpty()) {
-            throw new NoDataFoundException("user is not found. please register the user");
-        }
-        appUserRepo.deleteById(id);
-        return existingUser.get();
-    }
+    public Object updateAppUser(Long id, String role,Map<String ,Object> Updates) {
+        Optional<?> existingUser = Optional.empty(); // Use Optional for cleaner handling
 
-    @Override
-    public AppUser updateAppUser(Long id, Map<String ,Object> Updates) {
-        Optional<AppUser> existingUser = appUserRepo.findById(id);
-       // System.out.println(existingUser);
+        if ("ROLE_MOH".equals(role)) {
+
+            existingUser = mohRepo.findById(id);
+        } else if ("ROLE_PHIO".equals(role)) {
+
+            existingUser = phiRepo.findById(id);
+        }
         if (existingUser.isEmpty()) {
             throw new NoDataFoundException("user is not a Admin user. please register the user");
         }
-        AppUser userToUpdate = existingUser.get();
-        Updates.forEach((key,value) -> {
-                 switch (key){
-                     case "name" :
-                         userToUpdate.setName((String) value);
-                         break;
-                     case "email" :
-                         userToUpdate.setEmail((String) value);
-                         break;
-                     case "password" :
-                         userToUpdate.setPassword((String) value);
-                         break;
-                     case "role" :
-                         userToUpdate.setRole(Role.valueOf((String) value));
-                         break;
-                     default:
-                         throw new InvalidArgumentExeception("Invalid feild name " +key);
-                 }
-
-                }
-
-        );
-
-        AppUser updatedUserResponse = appUserRepo.save(userToUpdate);
-        return updatedUserResponse;
+       // Object userToUpdate = existingUser.get();
+        Optional<?> finalExistingUser = existingUser;
+//        Updates.forEach((key, value) -> {
+//                 switch (key){
+//                     case "name" :
+//                         finalExistingUser.get().getAppuser().setName((String) value);
+//                         break;
+//                     case "email" :
+//                         finalExistingUser.get().setEmail((String) value);
+//                         break;
+//                     case "password" :
+//                         finalExistingUser.get().setPassword((String) value);
+//                         break;
+//
+//                     default:
+//                         throw new InvalidArgumentExeception("Invalid feild name " +key);
+//                 }
+//
+//                }
+//
+//        );
+//
+//        AppUser updatedUserResponse = appUserRepo.save( existingUser.get());
+//        return updatedUserResponse;
+        return null;
     }
 
     @Override
@@ -177,6 +205,28 @@ public class AppUserServiceImpl implements AppUserService {
             System.out.println(phiUser);
             return phiUser;
         }
+    }
+
+    @Override
+    public Object getAppUserByIdAndRole(Long id, String role) {
+        Optional<?> user = Optional.empty(); // Use Optional for cleaner handling
+       // System.out.println("in sevice impl");
+        if ("ROLE_MOH".equals(role)) {
+
+            user = mohRepo.findById(id);
+           // System.out.println(user);
+        } else if ("ROLE_PHI".equals(role)) {
+
+            user = phiRepo.findById(id);
+           // System.out.println(user);
+        }
+
+
+        if (user.isEmpty()) {
+            throw new NoDataFoundException("No MOH or PHI officer found. Please register...");
+        }
+
+        return user.get();
     }
 
 
