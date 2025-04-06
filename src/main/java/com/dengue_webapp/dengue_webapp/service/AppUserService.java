@@ -13,11 +13,13 @@ public interface AppUserService {
 
     List<AppUser> getAllAppUsers();
 
-    AppUser getAppUserById(Long id);
 
-    AppUser deleteAppUser(Long id);
 
-    AppUser updateAppUser(Long id, Map<String ,Object> Updates);
+    String deleteAppUser(Long id,String role);
+
+    Object updateAppUser(Long id,String role, Map<String ,Object> Updates);
 
     Object loginAppUser(RequestLoginDto user);
+
+    Object getAppUserByIdAndRole(Long id, String role);
 }

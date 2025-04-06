@@ -122,6 +122,13 @@ public class PHIServiceImpl implements PHIService {
                 .orElseThrow(() -> new NoDataFoundException("phi Officer not found. Please register the user."));
         updates.forEach((key, value) -> {
             switch (key.toLowerCase()) {
+                case "name":
+                    userToUpdate.getAppuser().setName((String)value);
+                    break;
+                case "email":
+                    userToUpdate.getAppuser().setEmail((String)value);
+                    break;
+
                 case "mobilenumber":
                     userToUpdate.setMobilenumber(((String) value));
                     break;

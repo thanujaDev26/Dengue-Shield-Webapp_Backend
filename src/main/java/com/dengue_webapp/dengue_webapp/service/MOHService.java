@@ -29,4 +29,12 @@ public interface MOHService {
     Message sendDiseaseNotification(RequestMessageDto message);
 
     List<Message> getAllMessagesById(long id);
+
+    String deleteMessageById(long id);
+
+    List<PHIOfficer> getAllPhisId(long id);
+
+    String updatePhi(long mohId, long phiId);
+
+    String unassignPhi(long id);
 }

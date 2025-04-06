@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import javax.swing.text.html.Option;
 import java.sql.Date;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -74,8 +75,16 @@ public class MOHServiceImpl implements MOHService {
             // Fetch MOHOfficer, throw an exception if not found
             MOHOfficer userToUpdate = mohRepo.findById(id)
                     .orElseThrow(() -> new NoDataFoundException("MOH Officer not found. Please register the user."));
+        System.out.println(userToUpdate);
             updates.forEach((key, value) -> {
                 switch (key.toLowerCase()) {
+                    case "name":
+                        userToUpdate.getAppuser().setName((String)value);
+                        break;
+                    case "email":
+                        userToUpdate.getAppuser().setEmail((String)value);
+                        break;
+
                     case "mobilenumber":
                         userToUpdate.setMobilenumber(((String) value));
                         break;
@@ -324,6 +333,65 @@ public class MOHServiceImpl implements MOHService {
             throw new NoDataFoundException("No messages are found");
         }
         return messageList;
+    }
+
+    @Override
+    public String deleteMessageById(long id) {
+        Message message = messageRepo.findById(id)
+                .orElseThrow(() -> new NoDataFoundException("Message is not found"));
+        System.out.println(message);
+        CommunicableDiseaseNotification h544 = message.getH544();
+
+        if (h544 == null) {
+            throw new NoDataFoundException("h544 is not found");
+        }
+        System.out.println(message);
+        try {
+            messageRepo.delete(message);
+            communicableDiseaseNotificationRepo.delete(h544);
+
+        }
+        catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+        return "Message and associated h544 deleted successfully";
+    }
+
+    @Override
+    public List<PHIOfficer> getAllPhisId(long id) {
+        Optional<MOHOfficer> optionalMOHOfficer = mohRepo.findById(id);
+        if(optionalMOHOfficer.isEmpty()){
+            throw new NoDataFoundException("Moh officer is not found");
+        }
+        List<PHIOfficer> assighnedPhiList = phiRepo.findAllByDistrictAndAndBranch(optionalMOHOfficer.get().getDistrict(),optionalMOHOfficer.get().getBranch());
+        return assighnedPhiList;
+    }
+
+    @Override
+    public String updatePhi(long mohId, long phiId) {
+        Optional<MOHOfficer> mohOfficer = mohRepo.findById(mohId);
+        if(mohOfficer.isEmpty()){
+            throw new NoDataFoundException("Mohofficer is not found");
+        }
+        Optional<PHIOfficer> phiOfficer = phiRepo.findById(phiId);
+        if(phiOfficer.isEmpty()){
+            throw new NoDataFoundException("PhiOfficer is not found");
+        }
+
+        phiOfficer.get().setMohOfficer(mohOfficer.get());
+        phiRepo.save(phiOfficer.get());
+        return "you have successfully assign phi officer";
+    }
+
+    @Override
+    public String unassignPhi(long id) {
+        Optional<PHIOfficer> phiOfficer = phiRepo.findById(id);
+        if(phiOfficer.isEmpty()){
+            throw new NoDataFoundException("PhiOfficer is not found");
+        }
+        phiOfficer.get().setMohOfficer(null);
+        phiRepo.save(phiOfficer.get());
+        return "phi officer successfully unassigned";
     }
 
 
