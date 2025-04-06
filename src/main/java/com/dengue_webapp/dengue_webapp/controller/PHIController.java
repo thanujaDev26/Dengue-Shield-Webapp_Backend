@@ -23,7 +23,7 @@ public class PHIController {
 
     @Autowired
     private  PHIService phiService;
-    @PatchMapping("/updatePhi/{id}")
+    @PatchMapping("/updateUser/{id}")
     public ResponseEntity<StandardResponse> updatePhiOfficer(@PathVariable Long id, @RequestBody Map<String ,Object> Updates) {
         //System.out.println("hello world");
         PHIOfficer UpdatedUser = phiService.updatePhiOfficer(id, Updates);

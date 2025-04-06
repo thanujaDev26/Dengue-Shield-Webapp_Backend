@@ -29,9 +29,9 @@ public class MOHController {
     private ModelMapper modelMapper;
 
     //we pass moh id to frontend when moh login.
-    @PatchMapping("/updateMoh/{id}")
+    @PatchMapping("/updateUser/{id}")
     public ResponseEntity<StandardResponse> updateMohOfficer(@PathVariable Long id, @RequestBody Map<String ,Object> Updates) {
-       // System.out.println("hello world");
+       System.out.println("hello world");
         MOHOfficer UpdatedUser = mohService.updateMohOfficer(id, Updates);
         StandardResponse response = new StandardResponse(200, "user updated successfully",UpdatedUser);
         return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -107,6 +107,42 @@ public class MOHController {
         StandardResponse response = new StandardResponse(200, "get all  messages successfully", messageList );
         return ResponseEntity.ok(response);
     }
+
+    @DeleteMapping("/deleteMessage/{id}")
+    public ResponseEntity<StandardResponse> deleteMessageById(@PathVariable long id) {
+        System.out.println("hello in controller");
+        String DeletedMessage = mohService.deleteMessageById(id);
+        StandardResponse response = new StandardResponse(200, "you have  deleted the message successfully",DeletedMessage);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+    @GetMapping("/getAllPhis/{id}")
+    public ResponseEntity<StandardResponse> getAllPhisId(@PathVariable  long id) {
+
+        List<PHIOfficer> phiList =  mohService.getAllPhisId(id);
+        StandardResponse response = new StandardResponse(200, "get all  phi successfully", phiList );
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/updatePhi")
+    public ResponseEntity<StandardResponse> updatePhi(@RequestParam long mohId, @RequestParam long phiId) {
+
+        String message = mohService.updatePhi(mohId,phiId);
+        StandardResponse response = new StandardResponse(200, "phi is updated sucessfully",message);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+
+    }
+
+
+    @PatchMapping("/unassignPhi/{id}")
+    public ResponseEntity<StandardResponse> unassignPhi( @PathVariable  long id) {
+
+        String message = mohService.unassignPhi(id);
+        StandardResponse response = new StandardResponse(200, "phi is updated sucessfully",message);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+
+    }
+
+
 
 
 }

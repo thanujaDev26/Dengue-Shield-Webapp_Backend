@@ -20,7 +20,8 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable()) // Disable CSRF
-                .cors(cors -> cors.disable()) // Enable CORS with default config
+                .cors()
+                .and()// Enable CORS with default config
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/swagger-ui/**", "http://localhost:8080/swagger-ui/index.html#/**").permitAll() // Allow Swagger endpoints
                         .anyRequest().permitAll() // Allow all requests
@@ -41,6 +42,7 @@ public class SecurityConfig {
                 registry.addMapping("/**")
                         .allowedOrigins("http://localhost:5173","http://localhost:8080/swagger-ui/index.html#/")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS","PATCH")
+                        .allowedHeaders("*")
                         .allowCredentials(true);
             }
         };
