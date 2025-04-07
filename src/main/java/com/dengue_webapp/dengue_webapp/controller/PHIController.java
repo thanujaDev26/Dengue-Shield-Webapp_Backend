@@ -106,7 +106,13 @@ public class PHIController {
 
     }
 
+    @GetMapping("/getAllCompletedMessages/{phiId}")
+    public ResponseEntity<StandardResponse> getAllCompletedMessages(@PathVariable Long phiId) {
 
+        List<Message> completedMessageList = phiService.getAllCompletedMessages(phiId);
+        StandardResponse response = new StandardResponse(200, "Fetched all the messages",completedMessageList);
+        return ResponseEntity.ok(response);
+    }
 
 
 

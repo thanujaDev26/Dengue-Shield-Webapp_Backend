@@ -236,15 +236,15 @@ public class PHIServiceImpl implements PHIService {
 
     @Override
     public NoteBook saveNotebook(Long phiId, RequestNotebookDto note) {
-        //System.out.println("checkpoint 1");
+        System.out.println("checkpoint 1");
         Optional<PHIOfficer> phiOfficer = phiRepo.findById(phiId);
-        //System.out.println(phiOfficer.get());
+        System.out.println(phiOfficer.get());
         if (phiOfficer.isEmpty()){
             throw new NoDataFoundException("phi officer is not found,please register...");
         }
-       // System.out.println("checkpoint 2");
+        System.out.println("checkpoint 2");
         Optional<Patient> existingPatient = patientRepo.findById(note.getPatient().getId());
-        //System.out.println(existingPatient.get());
+        System.out.println(existingPatient.get());
         if (existingPatient.isEmpty()) {
             throw new NoDataFoundException("Patient not found");
         }
@@ -254,29 +254,71 @@ public class PHIServiceImpl implements PHIService {
         patientToUpdate.setRace(note.getPatient().getRace());
         patientRepo.save(patientToUpdate);
 
-        //System.out.println(patientToUpdate);
+        System.out.println(patientToUpdate);
 
         Optional<CommunicableDiseaseNotification> h544 = communicableDiseaseNotificationRepo.findById(note.getH544Id());
         if (h544.isEmpty()){
             throw new NoDataFoundException("h544 is not found");
         }
 
-      //  System.out.println(h544);
+        System.out.println(h544);
 
-        NoteBook newNote  = modelMapper.map(note, NoteBook.class);
-        //System.out.println( newNote);
+        NoteBook newNote  =new NoteBook();
+        newNote.setCondition(note.getCondition());
+        newNote.setDistance(note.getDistance());
+        newNote.setIsolation(note.getIsolation());
+        newNote.setRemarks(note.getRemarks());
+        newNote.setTermination(note.getTermination());
+        newNote.setSubject(note.getSubject());
+        System.out.println( newNote);
         newNote.setH544(h544.get());
-       // System.out.println( newNote);
+        System.out.println( newNote);
         newNote.setPhiOfficer(phiOfficer.get());
-        //System.out.println( newNote);
+        System.out.println( newNote);
         try{ noteBookRepo.save( newNote);}
         catch(Exception e){
             System.out.println(e.getMessage());
         }
-
-        //System.out.println( newNote);
+        noteBookRepo.flush();
+        Optional<Message> oldMsg = messageRepo.findById(note.getMessageId());
+        oldMsg.get().setNoteBook(newNote);
+        messageRepo.save(oldMsg.get());
+        System.out.println( newNote);
         return  newNote;
+    }
+
+    @Override
+    public List<Message> getAllCompletedMessages(Long phiId) {
+        List<Message> completedMessageList = messageRepo.findAllByPhiOfficer_IdAndStatusEquals(phiId,MessageStatus.COMPLETED);
+        if(completedMessageList.isEmpty()){
+            throw  new NoDataFoundException("there is no  message for you..");
+        }
+
+        return completedMessageList;
     }
 
 
 }
+/*  @OneToOne
+    @JoinColumn(name = "h544_id", nullable = false)
+    private CommunicableDiseaseNotification h544;
+
+
+    @OneToOne
+    @JoinColumn(name = "phi_id", nullable = false)
+    private PHIOfficer phiOfficer;
+
+
+
+    @Column(name = "subject")
+    private String subject;
+
+
+
+
+
+
+
+
+
+*/

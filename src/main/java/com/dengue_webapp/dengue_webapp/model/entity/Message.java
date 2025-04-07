@@ -37,6 +37,12 @@ public class Message {
     @JoinColumn(name = "h411_id", nullable = true)
     private H411 h411; // Linked outward document (nullable because it is sent later)
 
+
+    @OneToOne
+    @JoinColumn(nullable = true)
+    private NoteBook noteBook;
+
+
     @Enumerated(EnumType.STRING)
     private MessageStatus status; // SENT, PENDING, COMPLETED
 
