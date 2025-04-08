@@ -43,4 +43,6 @@ public interface PHIService {
     Message getMessageById(Long messageId);
 
     NoteBook saveNotebook(Long phiId, RequestNotebookDto note);
+
+    List<Message> getAllCompletedMessages(Long phiId);
 }

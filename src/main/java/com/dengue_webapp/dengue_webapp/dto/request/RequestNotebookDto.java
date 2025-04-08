@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class RequestNotebookDto {
 
-
+    private long messageId;
     private long h544Id;
     private Patient  patient;
     private String distance;
