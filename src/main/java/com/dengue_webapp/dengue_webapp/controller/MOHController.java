@@ -96,6 +96,7 @@ public class MOHController {
     @PostMapping("/sendDiseaseNotification")
 
     public ResponseEntity<StandardResponse> sendDiseaseNotification(@RequestBody RequestMessageDto message) {
+        System.out.println("hello in controller");
         Message savedMessage = mohService.sendDiseaseNotification(message);
         StandardResponse response = new StandardResponse(200, "message sent succesfully",savedMessage);
         return ResponseEntity.status(HttpStatus.OK).body(response);
