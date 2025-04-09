@@ -17,6 +17,7 @@ import com.dengue_webapp.dengue_webapp.repository.PreApprovedUserRepo;
 import com.dengue_webapp.dengue_webapp.service.AppUserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,6 +34,9 @@ public class AppUserServiceImpl implements AppUserService {
     @Autowired
     private ModelMapper modelMapper;
 
+
+    @Autowired
+    private BCryptPasswordEncoder encoder;
     @Autowired
     private MOHRepo mohRepo;
 
@@ -51,6 +55,7 @@ public class AppUserServiceImpl implements AppUserService {
 
         // Map DTO to AppUser entity
         AppUser newUser = modelMapper.map(user, AppUser.class);
+        newUser.setPassword(encoder.encode(user.getPassword()));
         newUser.setRole(preApprovedUser.getRole());
         try {
             appUserRepo.save(newUser);
@@ -185,7 +190,7 @@ public class AppUserServiceImpl implements AppUserService {
         }
         System.out.println(registeredUser);
         // Check password (Use a password encoder if passwords are hashed)
-        if (!registeredUser.getPassword().equals(user.getPassword())) {
+        if (!encoder.matches(user.getPassword(), registeredUser.getPassword())) {
             throw new InvalidArgumentExeception("Incorrect password.");
         }
 
