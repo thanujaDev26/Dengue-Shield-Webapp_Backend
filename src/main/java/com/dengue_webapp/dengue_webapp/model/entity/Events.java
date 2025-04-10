@@ -37,10 +37,10 @@ public class Events {
     @Column(name = "imageUrls")
     private String imageUrls;
 
-    @Column(name = "createdAt")
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @Column(name = "updatedAt")
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
 
