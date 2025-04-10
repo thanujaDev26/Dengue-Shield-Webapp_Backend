@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = "Events")
+@Table(name = "events")
 public class Events {
 
     @Id
@@ -37,10 +37,12 @@ public class Events {
     @Column(name = "imageUrls")
     private String imageUrls;
 
-    @Column(name = "createdAt")
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 
-    @Column(name = "updatedAt")
-    private LocalDateTime updatedAt = LocalDateTime.now();
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+
 
 }

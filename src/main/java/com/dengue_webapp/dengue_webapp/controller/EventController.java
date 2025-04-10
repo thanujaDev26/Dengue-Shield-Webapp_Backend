@@ -38,7 +38,7 @@ public class EventController {
                                                      @RequestParam("venue") String venue,
                                                      @RequestParam("image") MultipartFile image) throws IOException {
         System.out.println("hello in controller!");
-      Events event1 = eventService.saveNews(title,message,type,date,venue,image);
+        Events event1 = eventService.saveNews(title,message,type,date,venue,image);
         StandardResponse response = new StandardResponse(201, "Event saved suceesfully ", event1);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
