@@ -13,7 +13,7 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "note_book",uniqueConstraints = @UniqueConstraint(columnNames = {"phi_id", "h544_id"}))
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"phi_id", "h544_id"}))
 public class NoteBook {
     @Id
     @Column(name = "id", length = 45)

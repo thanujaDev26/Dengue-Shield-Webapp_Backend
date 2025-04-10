@@ -43,6 +43,9 @@ public class Message {
     private NoteBook noteBook;
 
 
+    @Column(name="district")
+    private String disrict;
+
     @Enumerated(EnumType.STRING)
     private MessageStatus status; // SENT, PENDING, COMPLETED
 

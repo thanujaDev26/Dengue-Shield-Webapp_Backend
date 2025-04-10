@@ -37,18 +37,24 @@ public class EventServiceIMPL implements EventService {
         event1.setType(type);
         event1.setDate(date);
         event1.setVenue(venue);
+        event1.setCreatedAt(LocalDateTime.now());
+        event1.setUpdatedAt(LocalDateTime.now());
         System.out.println(image);
         System.out.println(event1);
         // Upload image to S3 if provided
         if (image != null ) {
             String imageUrl = s3Service.uploadFile(image);
+            System.out.println(imageUrl);
             event1.setImageUrls(imageUrl);
             System.out.println(event1);
         }
         else{
             throw new NoDataFoundException("image is not included");
         }
-        return eventRepo.save(event1);
+        System.out.println(event1);
+        Events savedEvent = eventRepo.save(event1);
+        System.out.println(savedEvent); // EventId should not be null here
+        return savedEvent;
     }
 
 

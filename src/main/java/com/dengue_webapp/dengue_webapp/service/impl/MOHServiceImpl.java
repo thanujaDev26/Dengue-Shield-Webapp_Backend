@@ -299,27 +299,33 @@ public class MOHServiceImpl implements MOHService {
         if (mohOfficerOpt.isEmpty()) {
             throw new NoDataFoundException("MOH Officer not found.");
         }
-
+        System.out.println(mohOfficerOpt.get());
         Optional<PHIOfficer> phiOfficerOpt = phiRepo.findById(message.getPhiOfficerId());
         if (phiOfficerOpt.isEmpty()) {
             throw new NoDataFoundException("Phi Officer not found.");
         }
-
+        System.out.println(phiOfficerOpt.get());
         Optional<CommunicableDiseaseNotification> h544Opt = communicableDiseaseNotificationRepo.findById(message.getH544Id());
         if (h544Opt.isEmpty()) {
             throw new NoDataFoundException("h544 not found.");
         }
         // Create a new message
+        System.out.println(h544Opt.get());
         Message newMessage = Message.builder()
                 .mohOfficer(mohOfficerOpt.get()) // Set MOH Officer
                 .phiOfficer(phiOfficerOpt.get()) // Set PHI Officer
-                .h544(h544Opt.get()) // Set linked Inward Document
+                .h544(h544Opt.get())
+                .disrict(mohOfficerOpt.get().getDistrict())
+                .noteBook(null)
+                .h411(null)// Set linked Inward Document
                 .status(MessageStatus.PENDING) // Default status
                 .createdAt(Date.from(Instant.now())) // Current timestamp
                 .updatedAt(Date.from(Instant.now())) // Current timestamp
                 .build();
 //
-        return messageRepo.save(newMessage);
+        Message savedMsg = messageRepo.save(newMessage);
+        System.out.println(savedMsg);
+        return  savedMsg;
     }
 
     @Override
